@@ -1,4 +1,4 @@
-package com.example.jeddit.models;
+package com.example.jeddit.models.entitys;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,5 +24,8 @@ public class User {
 
     @Column(columnDefinition = "varchar(320)")
     private String email;
+
+    @Column(columnDefinition = "varchar(20)")
+    private String role;
 
 }
