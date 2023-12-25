@@ -2,6 +2,8 @@ package com.example.jeddit.controllers;
 
 import com.example.jeddit.exceptions.NotCorrectDataException;
 import com.example.jeddit.exceptions.NotUniqueDataException;
+import com.example.jeddit.exceptions.UserNotFoundException;
+import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.*;
 import com.example.jeddit.servicies.AuthService;
@@ -41,8 +43,10 @@ public class AuthController {
             User user = authService.signIn(request);
             String token = JWTService.generateToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(new UserAuthResponse(token));
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
+        } catch (UserNotFoundException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        } catch (WrongPasswordException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
         }
     }
 }
