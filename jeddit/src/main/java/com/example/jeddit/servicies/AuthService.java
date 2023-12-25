@@ -33,8 +33,8 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
         user.setRole("USER");
-        if(user.getLogin().length() < 5 || !isValidEmail(user.getEmail())){
-            throw new NotCorrectDataException();
+        if(user.getLogin().length() < 5 || !isValidEmail(user.getEmail()) || request.getPassword().length() < 5){
+            throw new NotCorrectDataException("Not correct data");
         }
         try {
             return userRepository.save(user);
@@ -47,10 +47,10 @@ public class AuthService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         Optional<User> user = userRepository.findByLogin(request.getLogin());
         if (user.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("User not found");
         }
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.get().getPassword())) {
-            throw new WrongPasswordException();
+            throw new WrongPasswordException("Wrong password");
         }
         return user.get();
     }

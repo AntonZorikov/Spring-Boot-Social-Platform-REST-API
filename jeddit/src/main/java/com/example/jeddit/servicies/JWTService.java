@@ -24,6 +24,7 @@ public class JWTService {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userid", user.getId());
+        claims.put("role", user.getRole());
 
         return Jwts.builder()
                 .setClaims(claims)
