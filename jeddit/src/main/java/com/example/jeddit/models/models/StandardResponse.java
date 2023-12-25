@@ -7,16 +7,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StandartResponse {
+public class StandardResponse {
 
-    private boolean error;
+    private boolean success;
+    private ErrorModel error;
     private String message;
 
-    public StandartResponse(String message) {
+    public StandardResponse(String message) {
         this.message = message;
     }
 
-    public StandartResponse(boolean error, String message) {
+    public StandardResponse(boolean success, ErrorModel error, String message) {
+        this.success = success;
         this.error = error;
         this.message = message;
     }

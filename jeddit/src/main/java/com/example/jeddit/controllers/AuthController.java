@@ -3,10 +3,7 @@ package com.example.jeddit.controllers;
 import com.example.jeddit.exceptions.NotCorrectDataException;
 import com.example.jeddit.exceptions.NotUniqueDataException;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.StandartResponse;
-import com.example.jeddit.models.models.UserRegistrationRequest;
-import com.example.jeddit.models.models.UserAuthResponse;
-import com.example.jeddit.models.models.UserSignInRequest;
+import com.example.jeddit.models.models.*;
 import com.example.jeddit.servicies.AuthService;
 import com.example.jeddit.servicies.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +26,11 @@ public class AuthController {
             String token = JWTService.generateToken(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserAuthResponse(token));
         } catch (NotCorrectDataException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandartResponse(true, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
         } catch (NotUniqueDataException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandartResponse(true, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StandartResponse(true, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StandardResponse(false, new ErrorModel(500, "INTERNAL_SERVER_ERROR", e.getMessage()), "error"));
         }
     }
 
@@ -45,7 +42,7 @@ public class AuthController {
             String token = JWTService.generateToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(new UserAuthResponse(token));
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandartResponse(true, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
         }
     }
 }
