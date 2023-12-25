@@ -6,6 +6,9 @@ import com.example.jeddit.exceptions.UserNotFoundException;
 import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.*;
+import com.example.jeddit.models.models.auth.UserAuthResponse;
+import com.example.jeddit.models.models.auth.UserRegistrationRequest;
+import com.example.jeddit.models.models.auth.UserSignInRequest;
 import com.example.jeddit.servicies.AuthService;
 import com.example.jeddit.servicies.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +46,7 @@ public class AuthController {
             User user = authService.signIn(request);
             String token = JWTService.generateToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(new UserAuthResponse(token));
-        } catch (UserNotFoundException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
-        } catch (WrongPasswordException e){
+        } catch (UserNotFoundException | WrongPasswordException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
         }
     }

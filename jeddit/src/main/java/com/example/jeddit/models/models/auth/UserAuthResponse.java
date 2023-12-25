@@ -1,4 +1,4 @@
-package com.example.jeddit.models.models;
+package com.example.jeddit.models.models.auth;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

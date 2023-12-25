@@ -28,4 +28,7 @@ public class User {
     @Column(columnDefinition = "varchar(20)")
     private String role;
 
+    @Column(columnDefinition = "integer")
+    private Integer carma;
+
 }

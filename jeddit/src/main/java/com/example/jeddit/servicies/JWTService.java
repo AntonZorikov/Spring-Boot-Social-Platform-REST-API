@@ -15,7 +15,8 @@ import java.util.Map;
 @Service
 public class JWTService {
 
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    //private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private static final String SECRET_KEY = "KnnJBkjUjbDiKDmRLdOdkKnnJBkjUjbDiKDmRLdOdkNNnMwIrJdSIoJSKjKJISoLWdmMfBdfGgGYEnLklFsGkoOJNNnMwIrJdSIoJSKjKJISoLWdmMfBdfGgGYEnLklFsGkoOJ";
     private static final long EXPIRATION_TIME = 3600000;
 
     public static String generateToken(User user) {
@@ -34,17 +35,18 @@ public class JWTService {
                 .compact();
     }
 
-    public static boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
 
-    public static String extractUser(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("username", String.class);
+    public long extractUserId(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("userid", Long.class);
     }
 
 }

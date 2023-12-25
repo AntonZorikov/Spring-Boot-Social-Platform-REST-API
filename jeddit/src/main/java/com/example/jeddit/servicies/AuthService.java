@@ -5,14 +5,13 @@ import com.example.jeddit.exceptions.NotUniqueDataException;
 import com.example.jeddit.exceptions.UserNotFoundException;
 import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.UserRegistrationRequest;
-import com.example.jeddit.models.models.UserSignInRequest;
+import com.example.jeddit.models.models.auth.UserRegistrationRequest;
+import com.example.jeddit.models.models.auth.UserSignInRequest;
 import com.example.jeddit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

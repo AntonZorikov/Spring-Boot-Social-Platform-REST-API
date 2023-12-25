@@ -22,4 +22,9 @@ public class StandardResponse {
         this.error = error;
         this.message = message;
     }
+
+    public StandardResponse(boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
 }
