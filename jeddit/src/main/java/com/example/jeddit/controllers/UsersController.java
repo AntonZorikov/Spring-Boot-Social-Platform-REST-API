@@ -1,9 +1,6 @@
 package com.example.jeddit.controllers;
 
-import com.example.jeddit.exceptions.NotCorrectDataException;
-import com.example.jeddit.exceptions.NotValidToken;
-import com.example.jeddit.exceptions.UserNotFoundException;
-import com.example.jeddit.exceptions.WrongPasswordException;
+import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.StandardResponse;
 import com.example.jeddit.models.models.users.*;
@@ -34,25 +31,31 @@ public class UsersController {
         }
     }
 
-    @GetMapping("/base_info")
+    @GetMapping("/base_info/{id}")
     @ResponseBody
-    private ResponseEntity<Object> baseInfo(@RequestBody UserIdRequest request) {
+    private ResponseEntity<Object> baseInfo(@PathVariable long id) {
         try {
-            UserBaseInfoPesponse response = usersService.getBaseInfo(request);
+            UserBaseInfoPesponse response = usersService.getBaseInfo(id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
         }
     }
 
-    @GetMapping("/all_info")
+    @GetMapping("/all_info/{id}")
     @ResponseBody
-    private ResponseEntity<Object> allInfo(@RequestBody UserJWTTokenRequest request) {
+    private ResponseEntity<Object> allInfo(@PathVariable long id, @RequestBody UserJWTTokenRequest request) {
         try {
-            UserAllInfoResponse response = usersService.getAllInfo(request);
+            UserAllInfoResponse response = usersService.getAllInfo(request, id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (UserNotFoundException | NotValidToken e) {
+        } catch (UserNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
+        } catch(NotValidToken e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        } catch (NotEnoughRightsException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
         }
     }
+
+    //@DeleteMapping()
 }

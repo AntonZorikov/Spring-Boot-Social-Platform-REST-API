@@ -1,9 +1,6 @@
 package com.example.jeddit.servicies;
 
-import com.example.jeddit.exceptions.NotCorrectDataException;
-import com.example.jeddit.exceptions.NotValidToken;
-import com.example.jeddit.exceptions.UserNotFoundException;
-import com.example.jeddit.exceptions.WrongPasswordException;
+import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.users.*;
 import com.example.jeddit.repositories.UserRepository;
@@ -11,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -43,15 +41,15 @@ public class UsersService {
         userRepository.save(newUser);
     }
 
-    public UserBaseInfoPesponse getBaseInfo(UserIdRequest request) throws UserNotFoundException {
-        Optional<User> user = userRepository.findById(request.getId());
+    public UserBaseInfoPesponse getBaseInfo(long id) throws UserNotFoundException {
+        Optional<User> user = userRepository.findById(id);
         if(user.isEmpty()){
             throw new UserNotFoundException("User not found");
         }
         return new UserBaseInfoPesponse(user.get());
     }
 
-    public UserAllInfoResponse getAllInfo(UserJWTTokenRequest request) throws UserNotFoundException, NotValidToken {
+    public UserAllInfoResponse getAllInfo(UserJWTTokenRequest request, long id) throws UserNotFoundException, NotValidToken, NotEnoughRightsException {
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
         }
@@ -59,6 +57,13 @@ public class UsersService {
         if(user.isEmpty()){
             throw new UserNotFoundException("User not found");
         }
-        return new UserAllInfoResponse(user.get());
+        if(Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
+            return new UserAllInfoResponse(user.get());
+        }
+        else{
+            throw new NotEnoughRightsException("Not enough rights");
+        }
     }
+
+
 }
