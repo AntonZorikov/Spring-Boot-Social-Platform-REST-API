@@ -22,8 +22,15 @@ public class Community {
     @Column(columnDefinition = "varchar(200)")
     private String description;
 
-    public Community(String title, String description) {
+    @ManyToOne
+    @JoinColumn(name = "owner")
+    private User owner;
+
+    public Community(String title, String description, User owner) {
         this.title = title;
         this.description = description;
+        this.owner = owner;
+        owner.addCommunity(this);
     }
+
 }

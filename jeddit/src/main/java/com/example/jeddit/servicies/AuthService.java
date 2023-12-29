@@ -32,6 +32,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
         user.setRole("USER");
+        user.setCarma(0);
         if(user.getLogin().length() < 5 || !isValidEmail(user.getEmail()) || request.getPassword().length() < 5){
             throw new NotCorrectDataException("Not correct data");
         }

@@ -7,6 +7,7 @@ import com.example.jeddit.models.entitys.Community;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
 import com.example.jeddit.repositories.CommunitiesRepository;
+import com.example.jeddit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,9 @@ public class CommunitiesService {
     private CommunitiesRepository communitiesRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private JWTService jwtService;
 
     public void createCommunity(CommunitiesCreateRequest request) throws NotUniqueDataException, NotValidToken {
@@ -29,7 +33,7 @@ public class CommunitiesService {
         if(community.isPresent()){
             throw new NotUniqueDataException("Not unique community title");
         }
-        Community newCommunity = new Community(request.getTitle(), request.getDescription());
+        Community newCommunity = new Community(request.getTitle(), request.getDescription(), userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get());
         communitiesRepository.save(newCommunity);
     }
 
