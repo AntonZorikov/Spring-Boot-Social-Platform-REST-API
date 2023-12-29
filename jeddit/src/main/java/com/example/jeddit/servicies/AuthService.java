@@ -2,7 +2,7 @@ package com.example.jeddit.servicies;
 
 import com.example.jeddit.exceptions.NotCorrectDataException;
 import com.example.jeddit.exceptions.NotUniqueDataException;
-import com.example.jeddit.exceptions.UserNotFoundException;
+import com.example.jeddit.exceptions.DataNotFoundException;
 import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.auth.UserRegistrationRequest;
@@ -42,11 +42,11 @@ public class AuthService {
         }
     }
 
-    public User signIn(UserSignInRequest request) throws UserNotFoundException, WrongPasswordException {
+    public User signIn(UserSignInRequest request) throws DataNotFoundException, WrongPasswordException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         Optional<User> user = userRepository.findByLogin(request.getLogin());
         if (user.isEmpty()) {
-            throw new UserNotFoundException("User not found");
+            throw new DataNotFoundException("User not found");
         }
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.get().getPassword())) {
             throw new WrongPasswordException("Wrong password");

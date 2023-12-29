@@ -20,7 +20,7 @@ public class UsersService {
     @Autowired
     private JWTService jwtService;
 
-    public void changePassword(UserChangePasswordRequest request) throws NotValidToken, UserNotFoundException, WrongPasswordException, NotCorrectDataException {
+    public void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
@@ -28,7 +28,7 @@ public class UsersService {
         long userid = jwtService.extractUserId(request.getJwttoken());
         Optional<User> user = userRepository.findById(userid);
         if (user.isEmpty()) {
-            throw new UserNotFoundException("User not found");
+            throw new DataNotFoundException("User not found");
         }
         if(request.getNewPassword().length() < 5){
             throw new NotCorrectDataException("Not correct data");
@@ -41,21 +41,21 @@ public class UsersService {
         userRepository.save(newUser);
     }
 
-    public UserBaseInfoPesponse getBaseInfo(long id) throws UserNotFoundException {
+    public UserBaseInfoPesponse getBaseInfo(long id) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if(user.isEmpty()){
-            throw new UserNotFoundException("User not found");
+            throw new DataNotFoundException("User not found");
         }
         return new UserBaseInfoPesponse(user.get());
     }
 
-    public UserAllInfoResponse getAllInfo(UserJWTTokenRequest request, long id) throws UserNotFoundException, NotValidToken, NotEnoughRightsException {
+    public UserAllInfoResponse getAllInfo(UserJWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
         }
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
         if(user.isEmpty()){
-            throw new UserNotFoundException("User not found");
+            throw new DataNotFoundException("User not found");
         }
         if(Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
             return new UserAllInfoResponse(user.get());
@@ -65,5 +65,19 @@ public class UsersService {
         }
     }
 
-
+    public void deleteUser(UserJWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
+        if(!jwtService.validateToken(request.getJwttoken())){
+            throw new NotValidToken("Not valid token");
+        }
+        Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
+        if(user.isEmpty()){
+            throw new DataNotFoundException("User not found");
+        }
+        if(Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
+            userRepository.delete(user.get());
+        }
+        else{
+            throw new NotEnoughRightsException("Not enough rights");
+        }
+    }
 }

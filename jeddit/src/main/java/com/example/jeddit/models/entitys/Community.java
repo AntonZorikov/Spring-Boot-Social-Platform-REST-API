@@ -22,4 +22,8 @@ public class Community {
     @Column(columnDefinition = "varchar(200)")
     private String description;
 
+    public Community(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 }

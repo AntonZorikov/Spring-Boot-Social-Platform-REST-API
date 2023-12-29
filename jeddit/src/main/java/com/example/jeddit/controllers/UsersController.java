@@ -24,9 +24,9 @@ public class UsersController {
             System.out.println(request.toString());
             usersService.changePassword(request);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Password changed successfully"));
-        } catch (UserNotFoundException | WrongPasswordException | NotValidToken e) {
+        } catch (WrongPasswordException | NotValidToken e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
-        } catch (NotCorrectDataException e) {
+        } catch (DataNotFoundException | NotCorrectDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
         }
     }
@@ -37,7 +37,7 @@ public class UsersController {
         try {
             UserBaseInfoPesponse response = usersService.getBaseInfo(id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (UserNotFoundException e) {
+        } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
         }
     }
@@ -48,14 +48,27 @@ public class UsersController {
         try {
             UserAllInfoResponse response = usersService.getAllInfo(request, id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (UserNotFoundException e){
+        } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
-        } catch(NotValidToken e) {
+        } catch (NotValidToken e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
-        } catch (NotEnoughRightsException e){
+        } catch (NotEnoughRightsException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
         }
     }
 
-    //@DeleteMapping()
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    private ResponseEntity<Object> deleteUser(@PathVariable long id, @RequestBody UserJWTTokenRequest request) {
+        try {
+            usersService.deleteUser(request, id);
+            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        } catch (NotEnoughRightsException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
+        }
+    }
 }
