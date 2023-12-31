@@ -27,6 +27,15 @@ public class AuthService {
 
     public User registrationUser(UserRegistrationRequest request) throws NotUniqueDataException, NotCorrectDataException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        if(request.getLogin().length() > 50){
+            throw new NotCorrectDataException("Login length must be less then 200 characters");
+        }
+        if(request.getPassword().length() > 255){
+            throw new NotCorrectDataException("Password length must be less then 200 characters");
+        }
+        if(request.getEmail().length() > 320){
+            throw new NotCorrectDataException("Email length must be less then 200 characters");
+        }
         User user = new User();
         user.setLogin(request.getLogin());
         user.setEmail(request.getEmail());

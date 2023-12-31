@@ -1,10 +1,10 @@
 package com.example.jeddit.servicies;
 
-import com.example.jeddit.exceptions.DataNotFoundException;
-import com.example.jeddit.exceptions.NotUniqueDataException;
-import com.example.jeddit.exceptions.NotValidToken;
+import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Community;
+import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
+import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
 import com.example.jeddit.repositories.CommunitiesRepository;
 import com.example.jeddit.repositories.UserRepository;
@@ -25,13 +25,19 @@ public class CommunitiesService {
     @Autowired
     private JWTService jwtService;
 
-    public void createCommunity(CommunitiesCreateRequest request) throws NotUniqueDataException, NotValidToken {
+    public void createCommunity(CommunitiesCreateRequest request) throws NotUniqueDataException, NotValidToken, NotCorrectDataException {
         Optional<Community> community = communitiesRepository.findByTitle(request.getTitle());
-        if(!jwtService.validateToken(request.getJwttoken())){
+        if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
-        if(community.isPresent()){
+        if (community.isPresent()) {
             throw new NotUniqueDataException("Not unique community title");
+        }
+        if(request.getDescription().length() > 200){
+            throw new NotCorrectDataException("Description length must be less then 200 characters");
+        }
+        if(request.getTitle().length() > 50){
+            throw new NotCorrectDataException("Title length must be less then 200 characters");
         }
         Community newCommunity = new Community(request.getTitle(), request.getDescription(), userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get());
         communitiesRepository.save(newCommunity);
@@ -39,9 +45,39 @@ public class CommunitiesService {
 
     public CommunityInfoResponse getCommunity(String title) throws DataNotFoundException {
         Optional<Community> community = communitiesRepository.findByTitle(title);
-        if(community.isEmpty()){
+        if (community.isEmpty()) {
             throw new DataNotFoundException("Community not found");
         }
         return new CommunityInfoResponse(community.get());
     }
+
+    public void deleteCommunity(String title, JWTTokenRequest request) throws DataNotFoundException, NotEnoughRightsException, NotValidToken {
+        Optional<Community> community = communitiesRepository.findByTitle(title);
+        if (community.isEmpty()) {
+            throw new DataNotFoundException("Community not found");
+        }
+        if (!jwtService.validateToken(request.getJwttoken())) {
+            throw new NotValidToken("Not valid token");
+        }
+        if(community.get().getOwner().getId() != jwtService.extractUserId(request.getJwttoken())){
+            throw new NotEnoughRightsException("Not enough rights exception");
+        }
+    }
+
+    public void changeDescription(String title, CommunityChangeDescriptionRequest request) throws DataNotFoundException, NotEnoughRightsException, NotCorrectDataException, NotValidToken {
+        Optional<Community> community = communitiesRepository.findByTitle(title);
+        if (community.isEmpty()) {
+            throw new DataNotFoundException("Community not found");
+        }
+        if (!jwtService.validateToken(request.getJwttoken())) {
+            throw new NotValidToken("Not valid token");
+        }
+        if(community.get().getOwner().getId() != jwtService.extractUserId(request.getJwttoken())){
+            throw new NotEnoughRightsException("Not enough rights exception");
+        }
+        if(request.getNewDescription().length() > 200){
+            throw new NotCorrectDataException("Description length must be less then 200 characters");
+        }
+    }
+
 }

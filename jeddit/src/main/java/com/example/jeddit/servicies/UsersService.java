@@ -1,6 +1,7 @@
 package com.example.jeddit.servicies;
 
 import com.example.jeddit.exceptions.*;
+import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.users.*;
 import com.example.jeddit.repositories.UserRepository;
@@ -20,18 +21,24 @@ public class UsersService {
     @Autowired
     private JWTService jwtService;
 
-    public void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException {
+    public void changePassword(long id, UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
         }
         long userid = jwtService.extractUserId(request.getJwttoken());
+        if(userid != id){
+            throw new NotEnoughRightsException("Not enough rights");
+        }
         Optional<User> user = userRepository.findById(userid);
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
         if(request.getNewPassword().length() < 5){
             throw new NotCorrectDataException("Not correct data");
+        }
+        if(request.getNewPassword().length() > 255){
+            throw new NotCorrectDataException("Password length must be less then 200 characters");
         }
         if (!bCryptPasswordEncoder.matches(request.getOldPassword(), user.get().getPassword())) {
             throw new WrongPasswordException("Wrong password");
@@ -49,7 +56,7 @@ public class UsersService {
         return new UserBaseInfoPesponse(user.get());
     }
 
-    public UserAllInfoResponse getAllInfo(UserJWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
+    public UserAllInfoResponse getAllInfo(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
         }
@@ -65,7 +72,7 @@ public class UsersService {
         }
     }
 
-    public void deleteUser(UserJWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
+    public void deleteUser(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
         }
