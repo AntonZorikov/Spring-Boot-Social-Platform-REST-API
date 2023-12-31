@@ -1,9 +1,11 @@
 package com.example.jeddit.servicies;
 
 import com.example.jeddit.exceptions.*;
-import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.users.*;
+import com.example.jeddit.models.models.JWTTokenRequest;
+import com.example.jeddit.models.models.users.UserAllInfoResponse;
+import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
+import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import com.example.jeddit.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -64,26 +66,24 @@ public class UsersService {
         if(user.isEmpty()){
             throw new DataNotFoundException("User not found");
         }
-        if(Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
+        if (Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
             return new UserAllInfoResponse(user.get());
-        }
-        else{
+        } else {
             throw new NotEnoughRightsException("Not enough rights");
         }
     }
 
-    public void deleteUser(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
-        if(!jwtService.validateToken(request.getJwttoken())){
+    public void delete(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
+        if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
-        if(Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
+        if (Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {
             userRepository.delete(user.get());
-        }
-        else{
+        } else {
             throw new NotEnoughRightsException("Not enough rights");
         }
     }

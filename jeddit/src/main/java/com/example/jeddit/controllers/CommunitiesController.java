@@ -24,7 +24,7 @@ public class CommunitiesController {
     @ResponseBody
     private ResponseEntity<Object> createCommunity(@RequestBody CommunitiesCreateRequest request) {
         try {
-            communitiesService.createCommunity(request);
+            communitiesService.create(request);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success create"));
         } catch (NotUniqueDataException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
@@ -39,7 +39,7 @@ public class CommunitiesController {
     @ResponseBody
     private ResponseEntity<Object> getCommunity(@PathVariable String title) {
         try {
-            CommunityInfoResponse response = communitiesService.getCommunity(title);
+            CommunityInfoResponse response = communitiesService.get(title);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (DataNotFoundException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
@@ -63,7 +63,7 @@ public class CommunitiesController {
     @ResponseBody
     private ResponseEntity<Object> deleteCommunity(@PathVariable String title, @RequestBody JWTTokenRequest request) {
         try {
-            communitiesService.deleteCommunity(title, request);
+            communitiesService.delete(title, request);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
         } catch (DataNotFoundException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));

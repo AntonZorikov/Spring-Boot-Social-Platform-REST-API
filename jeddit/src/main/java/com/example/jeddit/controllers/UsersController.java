@@ -1,10 +1,12 @@
 package com.example.jeddit.controllers;
 
 import com.example.jeddit.exceptions.*;
-import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.ErrorModel;
+import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.StandardResponse;
-import com.example.jeddit.models.models.users.*;
+import com.example.jeddit.models.models.users.UserAllInfoResponse;
+import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
+import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import com.example.jeddit.servicies.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,7 +65,7 @@ public class UsersController {
     @ResponseBody
     private ResponseEntity<Object> deleteUser(@PathVariable long id, @RequestBody JWTTokenRequest request) {
         try {
-            usersService.deleteUser(request, id);
+            usersService.delete(request, id);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));

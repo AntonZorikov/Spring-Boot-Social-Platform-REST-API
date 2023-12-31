@@ -32,5 +32,4 @@ public class Community {
         this.owner = owner;
         owner.addCommunity(this);
     }
-
 }

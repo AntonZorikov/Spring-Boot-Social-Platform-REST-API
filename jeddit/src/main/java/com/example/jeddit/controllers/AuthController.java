@@ -1,11 +1,12 @@
 package com.example.jeddit.controllers;
 
+import com.example.jeddit.exceptions.DataNotFoundException;
 import com.example.jeddit.exceptions.NotCorrectDataException;
 import com.example.jeddit.exceptions.NotUniqueDataException;
-import com.example.jeddit.exceptions.DataNotFoundException;
 import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.*;
+import com.example.jeddit.models.models.ErrorModel;
+import com.example.jeddit.models.models.StandardResponse;
 import com.example.jeddit.models.models.auth.UserAuthResponse;
 import com.example.jeddit.models.models.auth.UserRegistrationRequest;
 import com.example.jeddit.models.models.auth.UserSignInRequest;
@@ -25,28 +26,28 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseBody
-    private ResponseEntity<Object> register(@RequestBody UserRegistrationRequest request){
+    private ResponseEntity<Object> register(@RequestBody UserRegistrationRequest request) {
         try {
             User user = authService.registrationUser(request);
             String token = JWTService.generateToken(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserAuthResponse(token));
-        } catch (NotCorrectDataException e){
+        } catch (NotCorrectDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
-        } catch (NotUniqueDataException e){
+        } catch (NotUniqueDataException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StandardResponse(false, new ErrorModel(500, "INTERNAL_SERVER_ERROR", e.getMessage()), "error"));
         }
     }
 
     @PostMapping("/signin")
     @ResponseBody
-    private ResponseEntity<Object> signin(@RequestBody UserSignInRequest request){
+    private ResponseEntity<Object> signin(@RequestBody UserSignInRequest request) {
         try {
             User user = authService.signIn(request);
             String token = JWTService.generateToken(user);
             return ResponseEntity.status(HttpStatus.OK).body(new UserAuthResponse(token));
-        } catch (DataNotFoundException | WrongPasswordException e){
+        } catch (DataNotFoundException | WrongPasswordException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
         }
     }

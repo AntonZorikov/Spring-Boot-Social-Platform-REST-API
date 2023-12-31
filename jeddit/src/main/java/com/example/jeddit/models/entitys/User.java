@@ -40,5 +40,4 @@ public class User {
         communitiesOwner.add(community);
         community.setOwner(this);
     }
-
 }

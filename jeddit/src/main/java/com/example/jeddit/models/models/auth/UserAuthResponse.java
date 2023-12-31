@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserAuthResponse {
     private String JWTToken;
-
     public UserAuthResponse(String JWTToken) {
         this.JWTToken = JWTToken;
     }

@@ -25,7 +25,7 @@ public class CommunitiesService {
     @Autowired
     private JWTService jwtService;
 
-    public void createCommunity(CommunitiesCreateRequest request) throws NotUniqueDataException, NotValidToken, NotCorrectDataException {
+    public void create(CommunitiesCreateRequest request) throws NotUniqueDataException, NotValidToken, NotCorrectDataException {
         Optional<Community> community = communitiesRepository.findByTitle(request.getTitle());
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
@@ -33,17 +33,17 @@ public class CommunitiesService {
         if (community.isPresent()) {
             throw new NotUniqueDataException("Not unique community title");
         }
-        if(request.getDescription().length() > 200){
+        if (request.getDescription().length() > 200) {
             throw new NotCorrectDataException("Description length must be less then 200 characters");
         }
-        if(request.getTitle().length() > 50){
+        if (request.getTitle().length() > 50) {
             throw new NotCorrectDataException("Title length must be less then 200 characters");
         }
         Community newCommunity = new Community(request.getTitle(), request.getDescription(), userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get());
         communitiesRepository.save(newCommunity);
     }
 
-    public CommunityInfoResponse getCommunity(String title) throws DataNotFoundException {
+    public CommunityInfoResponse get(String title) throws DataNotFoundException {
         Optional<Community> community = communitiesRepository.findByTitle(title);
         if (community.isEmpty()) {
             throw new DataNotFoundException("Community not found");
@@ -51,7 +51,7 @@ public class CommunitiesService {
         return new CommunityInfoResponse(community.get());
     }
 
-    public void deleteCommunity(String title, JWTTokenRequest request) throws DataNotFoundException, NotEnoughRightsException, NotValidToken {
+    public void delete(String title, JWTTokenRequest request) throws DataNotFoundException, NotEnoughRightsException, NotValidToken {
         Optional<Community> community = communitiesRepository.findByTitle(title);
         if (community.isEmpty()) {
             throw new DataNotFoundException("Community not found");
@@ -59,7 +59,7 @@ public class CommunitiesService {
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
-        if(community.get().getOwner().getId() != jwtService.extractUserId(request.getJwttoken())){
+        if (community.get().getOwner().getId() != jwtService.extractUserId(request.getJwttoken())) {
             throw new NotEnoughRightsException("Not enough rights exception");
         }
     }
