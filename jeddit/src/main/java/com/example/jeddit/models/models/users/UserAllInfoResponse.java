@@ -2,10 +2,12 @@ package com.example.jeddit.models.models.users;
 
 import com.example.jeddit.models.entitys.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserAllInfoResponse {
 
     private long id;

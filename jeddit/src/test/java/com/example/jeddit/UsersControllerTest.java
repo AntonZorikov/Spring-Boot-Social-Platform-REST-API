@@ -2,6 +2,9 @@ package com.example.jeddit;
 
 import com.example.jeddit.controllers.UsersController;
 import com.example.jeddit.exceptions.*;
+import com.example.jeddit.models.models.JWTTokenRequest;
+import com.example.jeddit.models.models.users.UserAllInfoResponse;
+import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import com.example.jeddit.servicies.UsersService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,7 +91,95 @@ public class UsersControllerTest {
         testChangePassword(403, 403, new NotEnoughRightsException());
     }
 
+    private void testGetBaseInfo(int expectedStatus, Exception exception) throws Exception {
+        Mockito.doThrow(exception).when(usersService).getBaseInfo(anyLong());
 
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/{id}/base_info", 1)
+                        .content(asJsonString(new UserChangePasswordRequest()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(expectedStatus));
+    }
+
+    @Test
+    public void testGetBaseInfoOk() throws Exception {
+        Mockito.when(usersService.getBaseInfo(anyLong())).thenReturn(new UserBaseInfoPesponse());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/{id}/base_info", 1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetBaseInfo_DataNotFoundException() throws Exception {
+        testGetBaseInfo(404, new DataNotFoundException());
+    }
+
+    private void testGetAllInfo(int expectedStatus, Exception exception) throws Exception {
+        Mockito.doThrow(exception).when(usersService).getAllInfo(any(JWTTokenRequest.class), anyLong());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/{id}/all_info", 1)
+                        .content(asJsonString(new JWTTokenRequest()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(expectedStatus));
+    }
+
+    @Test
+    public void testGetAllInfoOk() throws Exception{
+        Mockito.when(usersService.getAllInfo(any(JWTTokenRequest.class) , anyLong())).thenReturn(new UserAllInfoResponse());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users/{id}/all_info", 1)
+                .content(asJsonString(new UserAllInfoResponse()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetAllInfo_DataNotFoundException() throws Exception {
+        testGetAllInfo(404, new DataNotFoundException());
+    }
+
+    @Test
+    public void testGetAllInfo_NotValidToken() throws Exception {
+        testGetAllInfo(401, new NotValidToken());
+    }
+
+    @Test
+    public void testGetAllInfo_NotEnoughRightsException() throws Exception {
+        testGetAllInfo(403, new NotEnoughRightsException());
+    }
+
+    private void testDelete(int expectedStatus, Exception exception) throws Exception {
+        Mockito.doThrow(exception).when(usersService).delete(any(JWTTokenRequest.class), anyLong());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{id}", 1)
+                        .content(asJsonString(new JWTTokenRequest()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(expectedStatus));
+    }
+
+    @Test
+    public void testDeleteOk() throws Exception{
+        Mockito.doNothing().when(usersService).delete(any(JWTTokenRequest.class) , anyLong());
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{id}", 1)
+                        .content(asJsonString(new UserAllInfoResponse()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDelete_DataNotFoundException() throws Exception{
+        testDelete(404, new DataNotFoundException());
+    }
+
+    @Test
+    public void testDelete_NotValidToken() throws Exception{
+        testDelete(401, new NotValidToken());
+    }
+
+    @Test
+    public void testDelete_NotEnoughRightsException() throws Exception{
+        testDelete(403, new NotEnoughRightsException());
+    }
 
     private static String asJsonString(final Object obj) {
         try {
