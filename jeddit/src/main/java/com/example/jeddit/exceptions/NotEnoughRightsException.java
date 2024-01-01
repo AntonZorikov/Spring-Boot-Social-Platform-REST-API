@@ -4,4 +4,7 @@ public class NotEnoughRightsException extends Exception {
     public NotEnoughRightsException(String message) {
         super(message);
     }
+
+    public NotEnoughRightsException() {
+    }
 }

@@ -4,4 +4,7 @@ public class NotCorrectDataException extends Exception {
     public NotCorrectDataException(String message) {
         super(message);
     }
+
+    public NotCorrectDataException() {
+    }
 }

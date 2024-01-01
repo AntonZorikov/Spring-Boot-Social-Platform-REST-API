@@ -4,4 +4,7 @@ public class NotValidToken extends Exception {
     public NotValidToken(String message) {
         super(message);
     }
+
+    public NotValidToken() {
+    }
 }
