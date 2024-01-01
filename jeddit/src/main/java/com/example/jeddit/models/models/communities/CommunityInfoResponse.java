@@ -3,10 +3,12 @@ package com.example.jeddit.models.models.communities;
 import com.example.jeddit.models.entitys.Community;
 import jakarta.persistence.Column;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class CommunityInfoResponse {
     private long id;
     private String title;
