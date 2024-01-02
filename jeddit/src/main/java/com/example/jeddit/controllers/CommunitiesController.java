@@ -110,9 +110,9 @@ public class CommunitiesController {
 
     @GetMapping("/{title}/followers")
     @ResponseBody
-    private ResponseEntity<Object> getFollowersCommunity(@PathVariable String title){
+    private ResponseEntity<Object> getFollowersCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to){
         try {
-            List<User> users = communitiesService.getFollowers(title);
+            List<User> users = communitiesService.getFollowers(title, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(new CommunityGetFollowersResponse(title, users));
         } catch (DataNotFoundException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));

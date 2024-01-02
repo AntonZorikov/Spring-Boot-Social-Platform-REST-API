@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -129,11 +130,22 @@ public class CommunitiesService {
         communitiesRepository.save(community.get());
     }
 
-    public List<User> getFollowers(String title) throws DataNotFoundException {
+    public List<User> getFollowers(String title, int from, int to) throws DataNotFoundException {
         Optional<Community> community = communitiesRepository.findByTitle(title);
         if (community.isEmpty()) {
             throw new DataNotFoundException("Community not found");
         }
-        return community.get().getFollowers();
+
+        List<User> allFollowers = community.get().getFollowers();
+        int followersCount = allFollowers.size();
+
+        if (from >= followersCount || to <= 0 || from >= to) {
+            return new ArrayList<>();
+        }
+
+        from = Math.max(0, from);
+        to = Math.min(followersCount, to);
+
+        return allFollowers.subList(from, to);
     }
 }
