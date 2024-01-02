@@ -1,15 +1,21 @@
 package com.example.jeddit.models.entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "communities")
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"followers"})
 public class Community {
 
     @Id
@@ -25,6 +31,9 @@ public class Community {
     @ManyToOne
     @JoinColumn(name = "owner")
     private User owner;
+
+    @ManyToMany(mappedBy = "communities")
+    private List<User> followers = new ArrayList<>();
 
     public Community(String title, String description, User owner) {
         this.title = title;

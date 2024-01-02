@@ -1,17 +1,21 @@
 package com.example.jeddit.controllers;
 
 import com.example.jeddit.exceptions.*;
+import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.StandardResponse;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
+import com.example.jeddit.models.models.communities.CommunityGetFollowersResponse;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
 import com.example.jeddit.servicies.CommunitiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/communities")
@@ -69,6 +73,49 @@ public class CommunitiesController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
         } catch (NotEnoughRightsException | NotValidToken e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        }
+    }
+
+    @PostMapping("/{title}/follow")
+    @ResponseBody
+    private ResponseEntity<Object> followCommunity(@PathVariable String title, @RequestBody JWTTokenRequest request){
+        System.out.println(title);
+        try {
+            communitiesService.follow(title, request);
+            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success follow"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        } catch (DataNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotUniqueDataException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+        }
+    }
+
+    @PostMapping("/{title}/unfollow")
+    @ResponseBody
+    private ResponseEntity<Object> unfollowCommunity(@PathVariable String title, @RequestBody JWTTokenRequest request){
+        System.out.println(title);
+        try {
+            communitiesService.unfollow(title, request);
+            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success unfollow"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        } catch (DataNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotUniqueDataException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+        }
+    }
+
+    @GetMapping("/{title}/followers")
+    @ResponseBody
+    private ResponseEntity<Object> getFollowersCommunity(@PathVariable String title){
+        try {
+            List<User> users = communitiesService.getFollowers(title);
+            return ResponseEntity.status(HttpStatus.OK).body(new CommunityGetFollowersResponse(title, users));
+        } catch (DataNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
         }
     }
 }

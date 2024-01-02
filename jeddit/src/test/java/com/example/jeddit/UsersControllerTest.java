@@ -1,7 +1,10 @@
 package com.example.jeddit;
 
 import com.example.jeddit.controllers.UsersController;
-import com.example.jeddit.exceptions.*;
+import com.example.jeddit.exceptions.DataNotFoundException;
+import com.example.jeddit.exceptions.NotEnoughRightsException;
+import com.example.jeddit.exceptions.NotValidToken;
+import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.users.UserAllInfoResponse;
 import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
@@ -23,8 +26,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,6 +42,14 @@ public class UsersControllerTest {
 
     @InjectMocks
     private UsersController usersController;
+
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Before
     public void setUp() {
@@ -123,12 +136,12 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void testGetAllInfoOk() throws Exception{
-        Mockito.when(usersService.getAllInfo(any(JWTTokenRequest.class) , anyLong())).thenReturn(new UserAllInfoResponse());
+    public void testGetAllInfoOk() throws Exception {
+        Mockito.when(usersService.getAllInfo(any(JWTTokenRequest.class), anyLong())).thenReturn(new UserAllInfoResponse());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/{id}/all_info", 1)
-                .content(asJsonString(new UserAllInfoResponse()))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(asJsonString(new UserAllInfoResponse()))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -157,8 +170,8 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void testDeleteOk() throws Exception{
-        Mockito.doNothing().when(usersService).delete(any(JWTTokenRequest.class) , anyLong());
+    public void testDeleteOk() throws Exception {
+        Mockito.doNothing().when(usersService).delete(any(JWTTokenRequest.class), anyLong());
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/{id}", 1)
                         .content(asJsonString(new UserAllInfoResponse()))
@@ -167,25 +180,17 @@ public class UsersControllerTest {
     }
 
     @Test
-    public void testDelete_DataNotFoundException() throws Exception{
+    public void testDelete_DataNotFoundException() throws Exception {
         testDelete(404, new DataNotFoundException());
     }
 
     @Test
-    public void testDelete_NotValidToken() throws Exception{
+    public void testDelete_NotValidToken() throws Exception {
         testDelete(401, new NotValidToken());
     }
 
     @Test
-    public void testDelete_NotEnoughRightsException() throws Exception{
+    public void testDelete_NotEnoughRightsException() throws Exception {
         testDelete(403, new NotEnoughRightsException());
-    }
-
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -23,15 +23,12 @@ public class UsersService {
     @Autowired
     private JWTService jwtService;
 
-    public void changePassword(long id, UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException {
+    public void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if(!jwtService.validateToken(request.getJwttoken())){
             throw new NotValidToken("Not valid token");
         }
         long userid = jwtService.extractUserId(request.getJwttoken());
-        if(userid != id){
-            throw new NotEnoughRightsException("Not enough rights");
-        }
         Optional<User> user = userRepository.findById(userid);
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");

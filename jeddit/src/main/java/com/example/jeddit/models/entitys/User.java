@@ -1,5 +1,7 @@
 package com.example.jeddit.models.entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email"})
 public class User {
 
     @Id
@@ -35,6 +38,12 @@ public class User {
 
     @OneToMany(mappedBy = "owner")
     private List<Community> communitiesOwner;
+
+    @ManyToMany
+    @JoinTable(name = "users_communities",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "community_id"))
+    private List<Community> communities;
 
     public void addCommunity(Community community) {
         communitiesOwner.add(community);

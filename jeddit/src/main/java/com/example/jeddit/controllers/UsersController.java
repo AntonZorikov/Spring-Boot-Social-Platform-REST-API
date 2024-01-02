@@ -20,11 +20,11 @@ public class UsersController {
     @Autowired
     private UsersService usersService;
 
-    @PutMapping("/{id}/change_password")
+    @PutMapping("/change_password")
     @ResponseBody
-    private ResponseEntity<Object> changePassword(@PathVariable long id, @RequestBody UserChangePasswordRequest request) {
+    private ResponseEntity<Object> changePassword(@RequestBody UserChangePasswordRequest request) {
         try {
-            usersService.changePassword(id, request);
+            usersService.changePassword(request);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Password changed successfully"));
         } catch (WrongPasswordException | NotValidToken e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
