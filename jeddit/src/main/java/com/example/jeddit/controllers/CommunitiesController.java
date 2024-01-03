@@ -1,6 +1,7 @@
 package com.example.jeddit.controllers;
 
 import com.example.jeddit.exceptions.*;
+import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.JWTTokenRequest;
@@ -114,6 +115,17 @@ public class CommunitiesController {
         try {
             List<User> users = communitiesService.getFollowers(title, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(new CommunityGetFollowersResponse(title, users));
+        } catch (DataNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        }
+    }
+
+    @GetMapping("/{title}/posts")
+    @ResponseBody
+    private ResponseEntity<Object> getPostsCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to){
+        try {
+            List<Post> posts = communitiesService.getPosts(title, from, to);
+            return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
         }

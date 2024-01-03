@@ -2,6 +2,7 @@ package com.example.jeddit.servicies;
 
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Community;
+import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
@@ -147,5 +148,24 @@ public class CommunitiesService {
         to = Math.min(followersCount, to);
 
         return allFollowers.subList(from, to);
+    }
+
+    public List<Post> getPosts(String title, int from, int to) throws DataNotFoundException {
+        Optional<Community> community = communitiesRepository.findByTitle(title);
+        if (community.isEmpty()) {
+            throw new DataNotFoundException("Community not found");
+        }
+
+        List<Post> allPosts = community.get().getPosts();
+        int postCount = allPosts.size();
+
+        if (from >= postCount || to <= 0 || from >= to) {
+            return new ArrayList<>();
+        }
+
+        from = Math.max(0, from);
+        to = Math.min(postCount, to);
+
+        return allPosts.subList(from, to);
     }
 }

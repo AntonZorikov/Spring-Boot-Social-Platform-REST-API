@@ -1,6 +1,8 @@
 package com.example.jeddit.servicies;
 
 import com.example.jeddit.exceptions.*;
+import com.example.jeddit.models.entitys.Community;
+import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.users.UserAllInfoResponse;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -83,5 +87,24 @@ public class UsersService {
         } else {
             throw new NotEnoughRightsException("Not enough rights");
         }
+    }
+
+    public List<Post> getPosts(long id, int from, int to) throws DataNotFoundException {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new DataNotFoundException("Community not found");
+        }
+
+        List<Post> allPosts = user.get().getPosts();
+        int postCount = allPosts.size();
+
+        if (from >= postCount || to <= 0 || from >= to) {
+            return new ArrayList<>();
+        }
+
+        from = Math.max(0, from);
+        to = Math.min(postCount, to);
+
+        return allPosts.subList(from, to);
     }
 }

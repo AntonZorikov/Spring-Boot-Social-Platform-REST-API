@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email"})
+@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts"})
 public class User {
 
     @Id
@@ -44,6 +44,9 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "community_id"))
     private List<Community> communities;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
     public void addCommunity(Community community) {
         communitiesOwner.add(community);

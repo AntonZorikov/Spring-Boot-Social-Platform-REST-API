@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"followers"})
+@JsonIgnoreProperties({"followers", "posts"})
 public class Community {
 
     @Id
@@ -34,6 +34,9 @@ public class Community {
 
     @ManyToMany(mappedBy = "communities")
     private List<User> followers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "community")
+    private List<Post> posts;
 
     public Community(String title, String description, User owner) {
         this.title = title;
