@@ -1,15 +1,14 @@
 package com.example.jeddit.controllers;
 
-import com.example.jeddit.exceptions.DataNotFoundException;
-import com.example.jeddit.exceptions.NotCorrectDataException;
-import com.example.jeddit.exceptions.NotEnoughRightsException;
-import com.example.jeddit.exceptions.NotValidToken;
+import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
+import com.example.jeddit.models.entitys.Vote;
 import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.StandardResponse;
 import com.example.jeddit.models.models.posts.PostCreateRequest;
 import com.example.jeddit.models.models.posts.PostUpdateRequest;
+import com.example.jeddit.models.models.vote.VoteGetResponse;
 import com.example.jeddit.servicies.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,4 +68,59 @@ public class PostsController {
         }
     }
 
+    @GetMapping("/{id}/vote")
+    private ResponseEntity<Object> getVote(@PathVariable long id, @RequestBody JWTTokenRequest request) {
+        try {
+            Vote vote = postService.getVote(id, request);
+            return ResponseEntity.status(HttpStatus.OK).body(new VoteGetResponse(vote));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotUniqueDataException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        }
+    }
+
+    @PostMapping("/{id}/upvote")
+    private ResponseEntity<Object> upvotePost(@PathVariable long id, @RequestBody JWTTokenRequest request) {
+        try {
+            postService.upvote(id, request);
+            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success upvote"));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotUniqueDataException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        }
+    }
+
+    @PostMapping("/{id}/downvote")
+    private ResponseEntity<Object> downVotePost(@PathVariable long id, @RequestBody JWTTokenRequest request) {
+        try {
+            postService.downvote(id, request);
+            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success downvote"));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotUniqueDataException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        }
+    }
+
+    @DeleteMapping("/{id}/vote")
+    private ResponseEntity<Object> deleteVote(@PathVariable long id, @RequestBody JWTTokenRequest request) {
+        try {
+            postService.deleteVote(id, request);
+            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotUniqueDataException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+        }
+    }
 }

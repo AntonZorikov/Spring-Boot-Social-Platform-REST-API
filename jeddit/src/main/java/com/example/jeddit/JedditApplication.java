@@ -35,6 +35,10 @@ public class JedditApplication {
 					- JWTTokenRequest
 				- post: post/{id}/downvote
 					- JWTTokenRequest
+				- delete: post/{id}/vote
+					- JWTTokenRequest
+				- get: post/{id}/vote
+					- JWTTokenRequest
 
 		UserService create carma calculate function
 

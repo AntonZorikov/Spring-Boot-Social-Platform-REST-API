@@ -90,6 +90,7 @@ public class CommunitiesService {
         communitiesRepository.save(community.get());
     }
 
+    @Transactional
     public void follow(String title, JWTTokenRequest request) throws NotValidToken, DataNotFoundException, NotUniqueDataException {
         Optional<Community> community = communitiesRepository.findByTitle(title);
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
@@ -112,11 +113,13 @@ public class CommunitiesService {
 
     @Transactional
     public void unfollow(String title, JWTTokenRequest request) throws NotValidToken, DataNotFoundException, NotUniqueDataException {
-        Optional<Community> community = communitiesRepository.findByTitle(title);
-        Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
+
+        Optional<Community> community = communitiesRepository.findByTitle(title);
+        Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
+
         if (community.isEmpty()) {
             throw new DataNotFoundException("Community not found");
         }

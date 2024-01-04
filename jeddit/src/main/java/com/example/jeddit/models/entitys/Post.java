@@ -1,5 +1,6 @@
 package com.example.jeddit.models.entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,12 +8,15 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"voters"})
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,5 +41,8 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "userid", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "post")
+    private List<Vote> voters = new ArrayList<>();
 
 }

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts"})
+@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts", "votedPosts"})
 public class User {
 
     @Id
@@ -47,6 +48,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Vote> votedPosts = new ArrayList<>();
 
     public void addCommunity(Community community) {
         communitiesOwner.add(community);
