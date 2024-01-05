@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts", "votedPosts"})
+@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts", "votedPosts", "commentaries"})
 public class User {
 
     @Id
@@ -51,6 +51,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Vote> votedPosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner")
+    private List<Commentary> commentaries;
 
     public void addCommunity(Community community) {
         communitiesOwner.add(community);

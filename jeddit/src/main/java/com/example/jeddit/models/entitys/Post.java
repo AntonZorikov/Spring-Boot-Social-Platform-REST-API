@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"voters"})
+@JsonIgnoreProperties({"voters", "commentaries"})
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +31,6 @@ public class Post {
     @Column(columnDefinition = "timestamp", name = "postdate", nullable = false)
     private Timestamp date;
 
-    @Column(nullable = false)
-    private int rating;
-
     @ManyToOne
     @JoinColumn(name = "communityid", nullable = false)
     private Community community;
@@ -44,5 +41,8 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     private List<Vote> voters = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post")
+    private List<Commentary> commentaries;
 
 }

@@ -67,7 +67,6 @@ public class PostService {
         post.setTitle(request.getTitle());
         post.setText(request.getText());
         post.setDate(new Timestamp(currentTimestamp));
-        post.setRating(0);
         post.setCommunity(community.get());
         post.setUser(user.get());
         postRepository.save(post);
@@ -113,6 +112,7 @@ public class PostService {
         postRepository.delete(post.get());
     }
 
+    @Transactional
     public void upvote(long id, JWTTokenRequest request) throws NotValidToken, DataNotFoundException, NotUniqueDataException {
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");

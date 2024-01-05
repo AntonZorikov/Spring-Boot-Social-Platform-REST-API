@@ -3,12 +3,15 @@ package com.example.jeddit.controllers;
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.Vote;
+import com.example.jeddit.models.models.CommentaryCreateRequest;
 import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.StandardResponse;
 import com.example.jeddit.models.models.posts.PostCreateRequest;
 import com.example.jeddit.models.models.posts.PostUpdateRequest;
 import com.example.jeddit.models.models.vote.VoteGetResponse;
+import com.example.jeddit.servicies.CommentaryService;
+import com.example.jeddit.servicies.CommunitiesService;
 import com.example.jeddit.servicies.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,9 @@ public class PostsController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private CommentaryService commentaryService;
 
     @PostMapping("/")
     private ResponseEntity<Object> createPost(@RequestBody PostCreateRequest request) {
@@ -57,7 +63,7 @@ public class PostsController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Object> updatePost(@PathVariable long id, @RequestBody JWTTokenRequest request) {
+    private ResponseEntity<Object> deletePost(@PathVariable long id, @RequestBody JWTTokenRequest request) {
         try {
             postService.delete(id, request);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
