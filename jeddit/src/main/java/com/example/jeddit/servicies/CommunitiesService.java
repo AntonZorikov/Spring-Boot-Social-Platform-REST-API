@@ -46,6 +46,12 @@ public class CommunitiesService {
         if (request.getTitle().length() > 50) {
             throw new NotCorrectDataException("Title length must be less then 200 characters");
         }
+        if (request.getTitle().length() < 3) {
+            throw new NotCorrectDataException("Title length must be more then 2 characters");
+        }
+        if(request.getTitle().split(" ").length != 1){
+            throw new NotCorrectDataException("Title must contains only one word");
+        }
         Community newCommunity = new Community(request.getTitle(), request.getDescription(), userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get());
         communitiesRepository.save(newCommunity);
     }

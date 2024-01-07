@@ -30,6 +30,12 @@ public class AuthService {
         if(request.getLogin().length() > 50){
             throw new NotCorrectDataException("Login length must be less then 200 characters");
         }
+        if(request.getLogin().length() < 3){
+            throw new NotCorrectDataException("Login length must be more then 2 characters");
+        }
+        if(request.getLogin().split(" ").length != 1){
+            throw new NotCorrectDataException("Login must contains only one word");
+        }
         if(request.getPassword().length() > 255){
             throw new NotCorrectDataException("Password length must be less then 200 characters");
         }
