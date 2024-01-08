@@ -35,8 +35,11 @@ public class Community {
     @ManyToMany(mappedBy = "communities")
     private List<User> followers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "community")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.REMOVE)
     private List<Post> posts;
+
+    @ManyToMany(mappedBy = "moderatedCommunities")
+    private List<User> moderators = new ArrayList<>();
 
     public Community(String title, String description, User owner) {
         this.title = title;

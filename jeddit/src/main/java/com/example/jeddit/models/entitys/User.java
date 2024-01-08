@@ -36,7 +36,7 @@ public class User {
     @Column(columnDefinition = "integer")
     private Integer carma;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
     private List<Community> communitiesOwner;
 
     @ManyToMany
@@ -45,14 +45,20 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "community_id"))
     private List<Community> communities;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Vote> votedPosts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
     private List<Commentary> commentaries;
+
+    @ManyToMany
+    @JoinTable(name = "moderators",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "community_id"))
+    private List<Community> moderatedCommunities;
 
     public void addCommunity(Community community) {
         communitiesOwner.add(community);

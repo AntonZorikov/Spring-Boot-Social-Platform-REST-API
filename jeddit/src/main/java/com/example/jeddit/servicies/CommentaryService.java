@@ -87,7 +87,7 @@ public class CommentaryService {
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
-        if(commentary.get().getOwner().getId() != user.get().getId() && !Objects.equals(user.get().getRole(), "ADMIN")){
+        if(commentary.get().getOwner().getId() != user.get().getId() && !Objects.equals(user.get().getRole(), "ADMIN") && !commentary.get().getPost().getCommunity().getModerators().contains(user.get())){
             throw new NotEnoughRightsException("Not enough rights exception");
         }
 

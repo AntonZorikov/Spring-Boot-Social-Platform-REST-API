@@ -106,7 +106,8 @@ public class PostService {
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
-        if (jwtService.extractUserId(request.getJwttoken()) != post.get().getUser().getId()) {
+        Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
+        if (jwtService.extractUserId(request.getJwttoken()) != post.get().getUser().getId() && !(user.isPresent() && post.get().getCommunity().getModerators().contains(user.get()))) {
             throw new NotEnoughRightsException("Not enough rights exception");
         }
         postRepository.delete(post.get());

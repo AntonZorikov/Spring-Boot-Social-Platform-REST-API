@@ -32,6 +32,7 @@ public class CommunitiesService {
     @Autowired
     private JWTService jwtService;
 
+    @Transactional
     public void create(CommunitiesCreateRequest request) throws NotUniqueDataException, NotValidToken, NotCorrectDataException {
         Optional<Community> community = communitiesRepository.findByTitle(request.getTitle());
         if (!jwtService.validateToken(request.getJwttoken())) {
@@ -52,7 +53,11 @@ public class CommunitiesService {
         if(request.getTitle().split(" ").length != 1){
             throw new NotCorrectDataException("Title must contains only one word");
         }
-        Community newCommunity = new Community(request.getTitle(), request.getDescription(), userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get());
+        User owner = userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get();
+        owner.setRole("MODERATOR");
+        Community newCommunity = new Community(request.getTitle(), request.getDescription(), owner);
+        newCommunity.getModerators().add(owner);
+        owner.getModeratedCommunities().add(newCommunity);
         communitiesRepository.save(newCommunity);
     }
 
