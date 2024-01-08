@@ -1,7 +1,6 @@
 package com.example.jeddit.servicies;
 
 import com.example.jeddit.exceptions.*;
-import com.example.jeddit.models.entitys.Community;
 import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.JWTTokenRequest;
@@ -29,7 +28,7 @@ public class UsersService {
 
     public void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        if(!jwtService.validateToken(request.getJwttoken())){
+        if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
         long userid = jwtService.extractUserId(request.getJwttoken());
@@ -37,10 +36,10 @@ public class UsersService {
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
-        if(request.getNewPassword().length() < 5){
+        if (request.getNewPassword().length() < 5) {
             throw new NotCorrectDataException("Not correct data");
         }
-        if(request.getNewPassword().length() > 255){
+        if (request.getNewPassword().length() > 255) {
             throw new NotCorrectDataException("Password length must be less then 200 characters");
         }
         if (!bCryptPasswordEncoder.matches(request.getOldPassword(), user.get().getPassword())) {
@@ -53,18 +52,18 @@ public class UsersService {
 
     public UserBaseInfoPesponse getBaseInfo(long id) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
         return new UserBaseInfoPesponse(user.get());
     }
 
     public UserAllInfoResponse getAllInfo(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
-        if(!jwtService.validateToken(request.getJwttoken())){
+        if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
         if (Objects.equals(user.get().getRole(), "ADMIN") || user.get().getId() == id) {

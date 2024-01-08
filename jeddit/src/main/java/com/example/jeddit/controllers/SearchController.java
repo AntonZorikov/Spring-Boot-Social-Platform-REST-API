@@ -20,19 +20,19 @@ public class SearchController {
     private SearchService searchService;
 
     @GetMapping("/users")
-    private ResponseEntity<Object> searchUsers(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request){
+    private ResponseEntity<Object> searchUsers(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request) {
         List<User> users = searchService.searchUser(request, from, to);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @GetMapping("/communities")
-    private ResponseEntity<Object> searchCommunities(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request){
+    private ResponseEntity<Object> searchCommunities(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request) {
         List<Community> communities = searchService.searchCommunity(request, from, to);
         return ResponseEntity.status(HttpStatus.OK).body(communities);
     }
 
     @GetMapping("/posts")
-    private ResponseEntity<Object> searchPosts(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request){
+    private ResponseEntity<Object> searchPosts(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request) {
         List<Post> posts = searchService.searchPost(request, from, to);
         return ResponseEntity.status(HttpStatus.OK).body(posts);
     }

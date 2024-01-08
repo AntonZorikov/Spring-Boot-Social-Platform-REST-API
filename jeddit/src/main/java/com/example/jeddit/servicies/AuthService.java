@@ -1,8 +1,8 @@
 package com.example.jeddit.servicies;
 
+import com.example.jeddit.exceptions.DataNotFoundException;
 import com.example.jeddit.exceptions.NotCorrectDataException;
 import com.example.jeddit.exceptions.NotUniqueDataException;
-import com.example.jeddit.exceptions.DataNotFoundException;
 import com.example.jeddit.exceptions.WrongPasswordException;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.auth.UserRegistrationRequest;
@@ -19,27 +19,31 @@ import java.util.regex.Pattern;
 @Service
 public class AuthService {
 
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$";
+    private static final Pattern emailPattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
     @Autowired
     private UserRepository userRepository;
 
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$";
-    private static final Pattern emailPattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
+    private static boolean isValidEmail(String email) {
+        Matcher matcher = emailPattern.matcher(email);
+        return matcher.matches();
+    }
 
     public User registrationUser(UserRegistrationRequest request) throws NotUniqueDataException, NotCorrectDataException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        if(request.getLogin().length() > 50){
+        if (request.getLogin().length() > 50) {
             throw new NotCorrectDataException("Login length must be less then 200 characters");
         }
-        if(request.getLogin().length() < 3){
+        if (request.getLogin().length() < 3) {
             throw new NotCorrectDataException("Login length must be more then 2 characters");
         }
-        if(request.getLogin().split(" ").length != 1){
+        if (request.getLogin().split(" ").length != 1) {
             throw new NotCorrectDataException("Login must contains only one word");
         }
-        if(request.getPassword().length() > 255){
+        if (request.getPassword().length() > 255) {
             throw new NotCorrectDataException("Password length must be less then 200 characters");
         }
-        if(request.getEmail().length() > 320){
+        if (request.getEmail().length() > 320) {
             throw new NotCorrectDataException("Email length must be less then 200 characters");
         }
         User user = new User();
@@ -48,12 +52,12 @@ public class AuthService {
         user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
         user.setRole("USER");
         user.setCarma(0);
-        if(user.getLogin().length() < 5 || !isValidEmail(user.getEmail()) || request.getPassword().length() < 5){
+        if (user.getLogin().length() < 5 || !isValidEmail(user.getEmail()) || request.getPassword().length() < 5) {
             throw new NotCorrectDataException("Not correct data");
         }
         try {
             return userRepository.save(user);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new NotUniqueDataException(ex.getMessage());
         }
     }
@@ -68,10 +72,6 @@ public class AuthService {
             throw new WrongPasswordException("Wrong password");
         }
         return user.get();
-    }
-    private static boolean isValidEmail(String email) {
-        Matcher matcher = emailPattern.matcher(email);
-        return matcher.matches();
     }
 }
 

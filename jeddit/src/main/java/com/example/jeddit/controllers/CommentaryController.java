@@ -50,7 +50,7 @@ public class CommentaryController {
         try {
             commentaryService.delete(id, request);
             return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
-        } catch (DataNotFoundException  e) {
+        } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
         } catch (NotValidToken | NotEnoughRightsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));

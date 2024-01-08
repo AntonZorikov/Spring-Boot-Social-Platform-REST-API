@@ -14,9 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +48,7 @@ public class CommunitiesService {
         if (request.getTitle().length() < 3) {
             throw new NotCorrectDataException("Title length must be more then 2 characters");
         }
-        if(request.getTitle().split(" ").length != 1){
+        if (request.getTitle().split(" ").length != 1) {
             throw new NotCorrectDataException("Title must contains only one word");
         }
         User owner = userRepository.findById(jwtService.extractUserId(request.getJwttoken())).get();

@@ -8,6 +8,7 @@ import com.example.jeddit.models.models.StandardResponse;
 import com.example.jeddit.models.models.users.UserAllInfoResponse;
 import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
+import com.example.jeddit.servicies.ContentService;
 import com.example.jeddit.servicies.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class UsersController {
 
     @Autowired
     private UsersService usersService;
+
+    @Autowired
+    private ContentService contentService;
 
     @PutMapping("/change_password")
     @ResponseBody
@@ -78,14 +82,28 @@ public class UsersController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
         }
     }
+
     @GetMapping("/{id}/posts")
     @ResponseBody
-    private ResponseEntity<Object> getPosts(@PathVariable long id, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to){
+    private ResponseEntity<Object> getPosts(@PathVariable long id, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to) {
         try {
             List<Post> posts = usersService.getPosts(id, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
-        } catch (DataNotFoundException e){
+        } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        }
+    }
+
+    @GetMapping("/newsline")
+    @ResponseBody
+    private ResponseEntity<Object> getNewsline(@RequestBody JWTTokenRequest request, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to) {
+        try {
+            List<Post> posts = contentService.getUserNewsline(request, from, to);
+            return ResponseEntity.status(HttpStatus.OK).body(posts);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+        } catch (NotValidToken e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
         }
     }
 }

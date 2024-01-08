@@ -14,7 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts", "votedPosts", "commentaries"})
+@JsonIgnoreProperties({"communitiesOwner", "communities", "password", "email", "posts", "votedPosts", "commentaries",
+        "moderatedCommunities"})
 public class User {
 
     @Id

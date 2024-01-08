@@ -1,6 +1,5 @@
 package com.example.jeddit.models.entitys;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIgnoreProperties({"followers", "posts"})
+@JsonIgnoreProperties({"followers", "posts", "moderators"})
 public class Community {
 
     @Id
