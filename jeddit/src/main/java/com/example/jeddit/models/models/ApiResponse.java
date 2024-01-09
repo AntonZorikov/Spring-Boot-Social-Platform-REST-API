@@ -7,24 +7,23 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StandardResponse {
+public class ApiResponse {
 
     private boolean success;
-    private ErrorModel error;
     private String message;
 
-    public StandardResponse(String message) {
+    public ApiResponse(String message) {
         this.message = message;
     }
 
-    public StandardResponse(boolean success, ErrorModel error, String message) {
+    public ApiResponse(boolean success, ErrorModel error, String message) {
         this.success = success;
-        this.error = error;
         this.message = message;
     }
 
-    public StandardResponse(boolean success, String message) {
+    public ApiResponse(boolean success, String message) {
         this.success = success;
         this.message = message;
     }
+
 }

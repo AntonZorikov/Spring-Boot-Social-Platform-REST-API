@@ -4,7 +4,7 @@ import com.example.jeddit.models.entitys.Community;
 import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
 import com.example.jeddit.models.models.SearchRequest;
-import com.example.jeddit.servicies.SearchService;
+import com.example.jeddit.servicies.impl.SearchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ import java.util.List;
 public class SearchController {
 
     @Autowired
-    private SearchService searchService;
+    private SearchServiceImpl searchService;
 
     @GetMapping("/users")
     private ResponseEntity<Object> searchUsers(@RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to, @RequestBody SearchRequest request) {

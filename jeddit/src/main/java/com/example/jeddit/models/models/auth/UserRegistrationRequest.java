@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class UserRegistrationRequest {
+
     private String login;
     private String password;
     private String email;
+
 }

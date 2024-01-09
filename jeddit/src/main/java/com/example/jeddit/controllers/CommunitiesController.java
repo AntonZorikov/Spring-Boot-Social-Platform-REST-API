@@ -3,14 +3,13 @@ package com.example.jeddit.controllers;
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.JWTTokenRequest;
-import com.example.jeddit.models.models.StandardResponse;
+import com.example.jeddit.models.models.ApiResponse;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
 import com.example.jeddit.models.models.communities.CommunityGetFollowersResponse;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
-import com.example.jeddit.servicies.CommunitiesService;
+import com.example.jeddit.servicies.impl.CommunitiesServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,20 +22,20 @@ import java.util.List;
 public class CommunitiesController {
 
     @Autowired
-    private CommunitiesService communitiesService;
+    private CommunitiesServiceImpl communitiesService;
 
     @PostMapping("/")
     @ResponseBody
     private ResponseEntity<Object> createCommunity(@RequestBody CommunitiesCreateRequest request) {
         try {
             communitiesService.create(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success create"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Success create"));
         } catch (NotUniqueDataException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
         } catch (NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         } catch (NotCorrectDataException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -47,7 +46,7 @@ public class CommunitiesController {
             CommunityInfoResponse response = communitiesService.get(title);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -56,11 +55,11 @@ public class CommunitiesController {
     private ResponseEntity<Object> changePassword(@PathVariable String title, @RequestBody CommunityChangeDescriptionRequest request) {
         try {
             communitiesService.changeDescription(title, request);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success description change"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Success description change"));
         } catch (DataNotFoundException | NotCorrectDataException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotEnoughRightsException | NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -69,11 +68,11 @@ public class CommunitiesController {
     private ResponseEntity<Object> deleteCommunity(@PathVariable String title, @RequestBody JWTTokenRequest request) {
         try {
             communitiesService.delete(title, request);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Success delete"));
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotEnoughRightsException | NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -83,13 +82,13 @@ public class CommunitiesController {
         System.out.println(title);
         try {
             communitiesService.follow(title, request);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success follow"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Success follow"));
         } catch (NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotUniqueDataException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -99,13 +98,13 @@ public class CommunitiesController {
         System.out.println(title);
         try {
             communitiesService.unfollow(title, request);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success unfollow"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Success unfollow"));
         } catch (NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotUniqueDataException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new StandardResponse(false, new ErrorModel(409, "CONFLICT", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -116,7 +115,7 @@ public class CommunitiesController {
             List<User> users = communitiesService.getFollowers(title, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(new CommunityGetFollowersResponse(title, users));
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -127,7 +126,7 @@ public class CommunitiesController {
             List<Post> posts = communitiesService.getPosts(title, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }
     }
 }

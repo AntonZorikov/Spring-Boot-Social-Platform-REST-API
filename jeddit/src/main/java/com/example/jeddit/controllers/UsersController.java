@@ -2,14 +2,13 @@ package com.example.jeddit.controllers;
 
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
-import com.example.jeddit.models.models.ErrorModel;
 import com.example.jeddit.models.models.JWTTokenRequest;
-import com.example.jeddit.models.models.StandardResponse;
+import com.example.jeddit.models.models.ApiResponse;
 import com.example.jeddit.models.models.users.UserAllInfoResponse;
 import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
-import com.example.jeddit.servicies.ContentService;
-import com.example.jeddit.servicies.UsersService;
+import com.example.jeddit.servicies.impl.ContentServiceImpl;
+import com.example.jeddit.servicies.impl.UsersServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,23 +21,23 @@ import java.util.List;
 public class UsersController {
 
     @Autowired
-    private UsersService usersService;
+    private UsersServiceImpl usersService;
 
     @Autowired
-    private ContentService contentService;
+    private ContentServiceImpl contentService;
 
     @PutMapping("/change_password")
     @ResponseBody
     private ResponseEntity<Object> changePassword(@RequestBody UserChangePasswordRequest request) {
         try {
             usersService.changePassword(request);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Password changed successfully"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Password changed successfully"));
         } catch (WrongPasswordException | NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         } catch (DataNotFoundException | NotCorrectDataException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotEnoughRightsException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -49,7 +48,7 @@ public class UsersController {
             UserBaseInfoPesponse response = usersService.getBaseInfo(id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -60,11 +59,11 @@ public class UsersController {
             UserAllInfoResponse response = usersService.getAllInfo(request, id);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
         } catch (NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         } catch (NotEnoughRightsException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -73,13 +72,13 @@ public class UsersController {
     private ResponseEntity<Object> deleteUser(@PathVariable long id, @RequestBody JWTTokenRequest request) {
         try {
             usersService.delete(request, id);
-            return ResponseEntity.status(HttpStatus.OK).body(new StandardResponse(true, "Success delete"));
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(true, "Success delete"));
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new StandardResponse(false, new ErrorModel(404, "NOT_FOUND", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, e.getMessage()));
         } catch (NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         } catch (NotEnoughRightsException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new StandardResponse(false, new ErrorModel(403, "FORBIDDEN", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -90,7 +89,7 @@ public class UsersController {
             List<Post> posts = usersService.getPosts(id, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }
     }
 
@@ -101,9 +100,9 @@ public class UsersController {
             List<Post> posts = contentService.getUserNewsline(request, from, to);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new StandardResponse(false, new ErrorModel(400, "BAD_REQUEST", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotValidToken e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new StandardResponse(false, new ErrorModel(401, "UNAUTHORIZED", e.getMessage()), "error"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, e.getMessage()));
         }
     }
 }

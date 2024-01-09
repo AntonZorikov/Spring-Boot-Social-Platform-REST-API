@@ -1,4 +1,4 @@
-package com.example.jeddit.servicies;
+package com.example.jeddit.servicies.impl;
 
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
@@ -8,6 +8,7 @@ import com.example.jeddit.models.models.users.UserAllInfoResponse;
 import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import com.example.jeddit.repositories.UserRepository;
+import com.example.jeddit.servicies.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-public class UsersService {
+public class UsersServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -26,13 +27,17 @@ public class UsersService {
     @Autowired
     private JWTService jwtService;
 
+    @Override
     public void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
+
         long userid = jwtService.extractUserId(request.getJwttoken());
         Optional<User> user = userRepository.findById(userid);
+
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
@@ -45,24 +50,32 @@ public class UsersService {
         if (!bCryptPasswordEncoder.matches(request.getOldPassword(), user.get().getPassword())) {
             throw new WrongPasswordException("Wrong password");
         }
+
         User newUser = user.get();
         newUser.setPassword(bCryptPasswordEncoder.encode(request.getNewPassword()));
+
         userRepository.save(newUser);
     }
 
+    @Override
     public UserBaseInfoPesponse getBaseInfo(long id) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(id);
+
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
+
         return new UserBaseInfoPesponse(user.get());
     }
 
+    @Override
     public UserAllInfoResponse getAllInfo(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
+
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
+
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
@@ -73,11 +86,14 @@ public class UsersService {
         }
     }
 
+    @Override
     public void delete(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
+
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
+
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
@@ -88,6 +104,7 @@ public class UsersService {
         }
     }
 
+    @Override
     public List<Post> getPosts(long id, int from, int to) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {

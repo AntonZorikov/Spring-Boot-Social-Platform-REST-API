@@ -1,4 +1,4 @@
-package com.example.jeddit.servicies;
+package com.example.jeddit.servicies.impl;
 
 
 import com.example.jeddit.models.entitys.User;
