@@ -7,6 +7,7 @@ import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -24,8 +25,8 @@ public interface CommunitiesService {
 
     void unfollow(String title, JWTTokenRequest request) throws NotValidToken, DataNotFoundException, NotUniqueDataException;
 
-    List<User> getFollowers(String title, int from, int to) throws DataNotFoundException;
+    Page<User> getFollowers(String title, int page, int size) throws DataNotFoundException;
 
-    List<Post> getPosts(String title, int from, int to) throws DataNotFoundException;
+    Page<Post> getPosts(String title, int page, int size) throws DataNotFoundException;
 
 }

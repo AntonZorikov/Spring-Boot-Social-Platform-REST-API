@@ -2,14 +2,15 @@ package com.example.jeddit.controllers;
 
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
-import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.ApiResponse;
+import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.users.UserAllInfoResponse;
 import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import com.example.jeddit.servicies.impl.ContentServiceImpl;
 import com.example.jeddit.servicies.impl.UsersServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,9 +85,9 @@ public class UsersController {
 
     @GetMapping("/{id}/posts")
     @ResponseBody
-    private ResponseEntity<Object> getPosts(@PathVariable long id, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to) {
+    private ResponseEntity<Object> getPosts(@PathVariable long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<Post> posts = usersService.getPosts(id, from, to);
+            Page<Post> posts = usersService.getPosts(id, page, size);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
@@ -95,9 +96,9 @@ public class UsersController {
 
     @GetMapping("/newsline")
     @ResponseBody
-    private ResponseEntity<Object> getNewsline(@RequestBody JWTTokenRequest request, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to) {
+    private ResponseEntity<Object> getNewsline(@RequestBody JWTTokenRequest request, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<Post> posts = contentService.getUserNewsline(request, from, to);
+            Page<Post> posts = contentService.getUserNewsline(request, page, size);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));

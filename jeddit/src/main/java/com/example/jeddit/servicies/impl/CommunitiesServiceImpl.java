@@ -13,6 +13,9 @@ import com.example.jeddit.repositories.UserRepository;
 import com.example.jeddit.servicies.CommunitiesService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -166,8 +169,7 @@ public class CommunitiesServiceImpl implements CommunitiesService {
         communitiesRepository.save(community.get());
     }
 
-    @Override
-    public List<User> getFollowers(String title, int from, int to) throws DataNotFoundException {
+    public Page<User> getFollowers(String title, int page, int size) throws DataNotFoundException {
         Optional<Community> community = communitiesRepository.findByTitle(title);
 
         if (community.isEmpty()) {
@@ -175,20 +177,18 @@ public class CommunitiesServiceImpl implements CommunitiesService {
         }
 
         List<User> allFollowers = community.get().getFollowers();
-        int followersCount = allFollowers.size();
+        int totalFollowers = allFollowers.size();
 
-        if (from >= followersCount || to <= 0 || from >= to) {
-            return new ArrayList<>();
-        }
+        int start = page * size;
+        int end = Math.min((start + size), totalFollowers);
 
-        from = Math.max(0, from);
-        to = Math.min(followersCount, to);
+        List<User> followersForPage = allFollowers.subList(start, end);
 
-        return allFollowers.subList(from, to);
+        return new PageImpl<>(followersForPage, PageRequest.of(page, size), totalFollowers);
     }
 
     @Override
-    public List<Post> getPosts(String title, int from, int to) throws DataNotFoundException {
+    public Page<Post> getPosts(String title, int page, int size) throws DataNotFoundException {
         Optional<Community> community = communitiesRepository.findByTitle(title);
 
         if (community.isEmpty()) {
@@ -198,13 +198,11 @@ public class CommunitiesServiceImpl implements CommunitiesService {
         List<Post> allPosts = community.get().getPosts();
         int postCount = allPosts.size();
 
-        if (from >= postCount || to <= 0 || from >= to) {
-            return new ArrayList<>();
-        }
+        int start = page * size;
+        int end = Math.min((start + size), postCount);
 
-        from = Math.max(0, from);
-        to = Math.min(postCount, to);
+        List<Post> followersForPage = allPosts.subList(start, end);
 
-        return allPosts.subList(from, to);
+        return new PageImpl<>(followersForPage, PageRequest.of(page, size), postCount);
     }
 }

@@ -10,6 +10,8 @@ import com.example.jeddit.repositories.PostRepository;
 import com.example.jeddit.repositories.UserRepository;
 import com.example.jeddit.servicies.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +31,19 @@ public class ContentServiceImpl implements ContentService {
     private JWTService jwtService;
 
     @Override
-    public List<Post> getUserNewsline(JWTTokenRequest request, int from, int to) throws NotValidToken, DataNotFoundException {
+    public Page<Post> getUserNewsline(JWTTokenRequest request, int page, int size) throws NotValidToken, DataNotFoundException {
         if (!jwtService.validateToken(request.getJwttoken())) {
             throw new NotValidToken("Not valid token");
         }
+
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
+
         if (user.isEmpty()) {
             throw new DataNotFoundException("User not found");
         }
-        List<Long> communityId = user.get().getCommunities().stream().map(Community::getId).collect(Collectors.toList());
-        return postRepository.findPostsByCommunitiesAndTimeRange(communityId, from, to - from);
-    }
 
+        List<Long> communityId = user.get().getCommunities().stream().map(Community::getId).collect(Collectors.toList());
+
+        return postRepository.findPostsByCommunityId(communityId, PageRequest.of(page, size));
+    }
 }

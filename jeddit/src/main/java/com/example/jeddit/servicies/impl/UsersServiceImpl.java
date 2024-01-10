@@ -10,6 +10,9 @@ import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import com.example.jeddit.repositories.UserRepository;
 import com.example.jeddit.servicies.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -105,7 +108,7 @@ public class UsersServiceImpl implements UserService {
     }
 
     @Override
-    public List<Post> getPosts(long id, int from, int to) throws DataNotFoundException {
+    public Page<Post> getPosts(long id, int page, int size) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) {
             throw new DataNotFoundException("Community not found");
@@ -114,13 +117,11 @@ public class UsersServiceImpl implements UserService {
         List<Post> allPosts = user.get().getPosts();
         int postCount = allPosts.size();
 
-        if (from >= postCount || to <= 0 || from >= to) {
-            return new ArrayList<>();
-        }
+        int start = page * size;
+        int end = Math.min((start + size), postCount);
 
-        from = Math.max(0, from);
-        to = Math.min(postCount, to);
+        List<Post> postPage = allPosts.subList(start, end);
 
-        return allPosts.subList(from, to);
+        return new PageImpl<>(postPage, PageRequest.of(page, size), postCount);
     }
 }

@@ -3,14 +3,14 @@ package com.example.jeddit.controllers;
 import com.example.jeddit.exceptions.*;
 import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.ApiResponse;
+import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
-import com.example.jeddit.models.models.communities.CommunityGetFollowersResponse;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
 import com.example.jeddit.servicies.impl.CommunitiesServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -110,10 +110,10 @@ public class CommunitiesController {
 
     @GetMapping("/{title}/followers")
     @ResponseBody
-    private ResponseEntity<Object> getFollowersCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to) {
+    private ResponseEntity<Object> getFollowersCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<User> users = communitiesService.getFollowers(title, from, to);
-            return ResponseEntity.status(HttpStatus.OK).body(new CommunityGetFollowersResponse(title, users));
+            Page<User> users = communitiesService.getFollowers(title, page, size);
+            return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         }
@@ -121,9 +121,9 @@ public class CommunitiesController {
 
     @GetMapping("/{title}/posts")
     @ResponseBody
-    private ResponseEntity<Object> getPostsCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int from, @RequestParam(defaultValue = "10") int to) {
+    private ResponseEntity<Object> getPostsCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
-            List<Post> posts = communitiesService.getPosts(title, from, to);
+            Page<Post> posts = communitiesService.getPosts(title, page, size);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));

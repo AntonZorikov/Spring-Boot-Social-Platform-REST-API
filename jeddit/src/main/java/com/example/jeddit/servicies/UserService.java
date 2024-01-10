@@ -6,6 +6,7 @@ import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.users.UserAllInfoResponse;
 import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,6 +20,6 @@ public interface UserService {
 
     void delete(JWTTokenRequest request, long id) throws DataNotFoundException, NotValidToken, NotEnoughRightsException;
 
-    List<Post> getPosts(long id, int from, int to) throws DataNotFoundException;
+    Page<Post> getPosts(long id, int from, int to) throws DataNotFoundException;
 
 }

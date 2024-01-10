@@ -9,6 +9,8 @@ import com.example.jeddit.repositories.PostRepository;
 import com.example.jeddit.repositories.UserRepository;
 import com.example.jeddit.servicies.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,41 +29,17 @@ public class SearchServiceImpl implements SearchService {
     private UserRepository userRepository;
 
     @Override
-    public List<User> searchUser(SearchRequest request, int from, int to) {
-        List<User> users = new ArrayList<>();
-
-        if (request.getText().split(" ").length == 1 && to > from) {
-            users = userRepository.searchAllByLogin(request.getText(), from, to - from);
-        }
-
-        return users;
+    public Page<User> searchUser(SearchRequest request, int page, int size) {
+        return userRepository.findByLoginContaining(request.getText(), PageRequest.of(page, size));
     }
 
     @Override
-    public List<Community> searchCommunity(SearchRequest request, int from, int to) {
-        List<Community> communities = new ArrayList<>();
-
-        if (request.getText().split(" ").length == 1 && to > from) {
-            communities = communitiesRepository.searchAllByTitle(request.getText(), from, to - from);
-        }
-        if (communities.size() == 0 && to > from) {
-            communities = communitiesRepository.searchAllByDescription(request.getText(), from, to - from);
-        }
-
-        return communities;
+    public Page<Community> searchCommunity(SearchRequest request, int page, int size) {
+        return communitiesRepository.findByTitleContaining(request.getText(), PageRequest.of(page, size));
     }
 
     @Override
-    public List<Post> searchPost(SearchRequest request, int from, int to) {
-        List<Post> posts = new ArrayList<>();
-
-        if (to > from) {
-            posts = postRepository.searchAllByTitle(request.getText(), from, to - from);
-        }
-        if (posts.size() == 0 && to > from) {
-            posts = postRepository.searchAllByText(request.getText(), from, to - from);
-        }
-
-        return posts;
+    public Page<Post> searchPost(SearchRequest request, int page, int size) {
+        return postRepository.findByTitleContaining(request.getText(), PageRequest.of(page, size));
     }
 }
