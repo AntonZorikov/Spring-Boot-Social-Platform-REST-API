@@ -8,8 +8,6 @@ import com.example.jeddit.models.models.users.UserBaseInfoPesponse;
 import com.example.jeddit.models.models.users.UserChangePasswordRequest;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface UserService {
 
     void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException;

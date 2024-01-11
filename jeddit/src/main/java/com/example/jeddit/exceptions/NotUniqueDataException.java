@@ -8,4 +8,5 @@ public class NotUniqueDataException extends Exception {
 
     public NotUniqueDataException() {
     }
+
 }

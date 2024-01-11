@@ -13,9 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class SearchServiceImpl implements SearchService {
 
@@ -39,7 +36,17 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    public Page<Community> searchCommunityByDescription(SearchRequest request, int page, int size) {
+        return communitiesRepository.findByDescriptionContaining(request.getText(), PageRequest.of(page, size));
+    }
+
+    @Override
     public Page<Post> searchPost(SearchRequest request, int page, int size) {
         return postRepository.findByTitleContaining(request.getText(), PageRequest.of(page, size));
+    }
+
+    @Override
+    public Page<Post> searchPostByText(SearchRequest request, int page, int size) {
+        return postRepository.findByTextContaining(request.getText(), PageRequest.of(page, size));
     }
 }

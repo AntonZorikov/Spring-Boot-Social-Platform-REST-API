@@ -13,4 +13,5 @@ public interface AuthService {
     User registrationUser(UserRegistrationRequest request) throws NotUniqueDataException, NotCorrectDataException;
 
     User signIn(UserSignInRequest request) throws DataNotFoundException, WrongPasswordException;
+
 }
