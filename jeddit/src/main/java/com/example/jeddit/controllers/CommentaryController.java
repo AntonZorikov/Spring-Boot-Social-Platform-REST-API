@@ -35,7 +35,7 @@ public class CommentaryController {
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<Object> createCommentary(@PathVariable long id) {
+    private ResponseEntity<Object> getCommentary(@PathVariable long id) {
         try {
             Commentary commentary = commentaryService.get(id);
             return ResponseEntity.status(HttpStatus.OK).body(commentary);
