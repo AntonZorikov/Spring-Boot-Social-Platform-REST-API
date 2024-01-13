@@ -88,6 +88,8 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 }
 ```
 
+### Auth
+
 ##### <a id="signin">/api/auth/signup</a>
 ```json
 {
@@ -105,6 +107,8 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 }
 ```
 
+### Users
+
 ##### <a id="change_password">api/users/{id}/change_password</a>
 ```json
 {
@@ -113,6 +117,8 @@ This project is a RESTful API developed using the Spring Boot framework. The API
     "newPassword" : "passNew"
 }
 ```
+
+### Posts
 
 ##### <a id="create_post">/api/posts/</a>
 ```json
@@ -132,6 +138,8 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 }
 ```
 
+### Communities
+
 ##### <a id="create_community">/api/communities/</a>
 ```json
 {
@@ -145,9 +153,11 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 ```json
 {
     "jwttoken" : "eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVVNFUiIsInVzZXJpZCI6MSwiaWF0IjoxNzA0MjA4NTAxLCJleHAiOjE3MDQyMTIxMDF9.OZ33EThhoZXR8ib9W0igz6KGBhj5N1OiX5nGJuRYGNFWeXhtphPPluqyoxqO5R45jDa-ACR9WOHiDGd6FrotWw",
-    "newDescription" : "some texеееееееt"
+    "newDescription" : "some text"
 }
 ```
+
+### Commentaries
 
 ##### <a id="create_commentary">/api/communities/{title}</a>
 ```json
