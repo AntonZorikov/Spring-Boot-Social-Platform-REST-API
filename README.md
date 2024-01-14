@@ -11,11 +11,14 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 - Hibernate
 - Maven
 
-## Install
+<!-- ## Install
 1. `git clone https://github.com/AntonZorikov/Spring-Boot-Social-Platform-REST-API`
 2. `cd Spring-Boot-Social-Platform-REST-API/jeddit`
 3. `mvn clean install`
-4. `java -jar target/***.jar`
+4. Create tables `psql -U {user} -d {database} -a -f api.sql` (\jeddit\api.sql)
+5. open `src/main/resources/application.properties`
+6. change `spring.datasource.username` and `spring.datasource.password` as per your postgres installation
+5. `java -jar target/***.jar` -->
 
 ## Api
 ### Auth
