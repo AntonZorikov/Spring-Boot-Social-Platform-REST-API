@@ -7,6 +7,7 @@ import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
+import com.example.jeddit.models.models.posts.MostRatedPostProjection;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -28,5 +29,7 @@ public interface CommunitiesService {
     Page<User> getFollowers(String title, int page, int size) throws DataNotFoundException;
 
     Page<Post> getPosts(String title, int page, int size) throws DataNotFoundException;
+
+    Page<MostRatedPostProjection> getMostRatedPosts(String title, int page, int size) throws DataNotFoundException;
 
 }

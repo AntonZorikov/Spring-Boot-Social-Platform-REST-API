@@ -8,6 +8,7 @@ import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
+import com.example.jeddit.models.models.posts.MostRatedPostProjection;
 import com.example.jeddit.repositories.CommunitiesRepository;
 import com.example.jeddit.repositories.UserRepository;
 import com.example.jeddit.servicies.CommunitiesService;
@@ -18,7 +19,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -204,5 +204,16 @@ public class CommunitiesServiceImpl implements CommunitiesService {
         List<Post> followersForPage = allPosts.subList(start, end);
 
         return new PageImpl<>(followersForPage, PageRequest.of(page, size), postCount);
+    }
+
+    @Override
+    public Page<MostRatedPostProjection> getMostRatedPosts(String title, int page, int size) throws DataNotFoundException {
+        Optional<Community> community = communitiesRepository.findByTitle(title);
+
+        if (community.isEmpty()) {
+            throw new DataNotFoundException("Community not found");
+        }
+
+        return communitiesRepository.findMostRatedPostsByCommunityId(community.get().getId(), PageRequest.of(page, size));
     }
 }

@@ -8,6 +8,7 @@ import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.communities.CommunitiesCreateRequest;
 import com.example.jeddit.models.models.communities.CommunityChangeDescriptionRequest;
 import com.example.jeddit.models.models.communities.CommunityInfoResponse;
+import com.example.jeddit.models.models.posts.MostRatedPostProjection;
 import com.example.jeddit.servicies.impl.CommunitiesServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -124,6 +125,17 @@ public class CommunitiesController {
     private ResponseEntity<Object> getPostsCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         try {
             Page<Post> posts = communitiesService.getPosts(title, page, size);
+            return ResponseEntity.status(HttpStatus.OK).body(posts);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{title}/topPosts")
+    @ResponseBody
+    private ResponseEntity<Object> getMostRatedPostsCommunity(@PathVariable String title, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        try {
+            Page<MostRatedPostProjection> posts = communitiesService.getMostRatedPosts(title, page, size);
             return ResponseEntity.status(HttpStatus.OK).body(posts);
         } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
