@@ -59,12 +59,14 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 | POST   | /api/communities/{title}/unfollow | Unsubscribe from the community | [JWT JSON](#jwt) | 
 | GET   | /api/communities/{title}/followers?page={num1}&size={num2} | Get community followers |  | 
 | GET   | /api/communities/{title}/posts?page={num1}&size={num2} | Get community posts |  | 
+| GET   | /api/communities/{title}/topPosts | Get most rated community posts |  | 
 
 ### Commentaries
 | Method | Url | Description | Request Body |
 | ------ | --- | ----------- | --------------------------- | 
 | POST   | /api/commentaries/{community_id}/ | Create a commentary | [JSON](#create_commentary) | 
 | GET   | /api/commentaries/{id} | Get information about the commentary |  |
+| PUT   | /api/commentaries/{id} | Edit the commentary | [JSON](#put_commentary) |
 | DELETE   | /api/commentaries/{id} | Delete the commentary | [JWT JSON](#jwt) |
 
 ### Search
@@ -167,6 +169,14 @@ This project is a RESTful API developed using the Spring Boot framework. The API
 {
     "jwttoken" : "eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVVNFUiIsInVzZXJpZCI6MTEsImlhdCI6MTcwNDQ3MDEwMywiZXhwIjoxNzA0NDczNzAzfQ.6quDswxcnMKQVU4FoRkt6eSjgyXy8_DxaYLzq5FRu5DfEhiUgSWqY5NPjSwETTTMnYjvLbSbvfWFUpzxlqHf4g",
     "text" : "Commentary"
+}
+```
+
+##### <a id="put_commentary">/api/communities/{title}</a>
+```json
+{
+    "jwttoken" : "eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVVNFUiIsInVzZXJpZCI6MTAsImlhdCI6MTcwNTMyOTQ0MiwiZXhwIjoxNzA1MzMzMDQyfQ.eyYuZIUQ4rqS3--FsxNXBvtedp9E0m--gZveRpPokXqhA51_jSVirubcmLBl45GW7L2l6HaoD3lu3YIYLaecSg",
+    "text" : "UPDATED: Some text"
 }
 ```
 
