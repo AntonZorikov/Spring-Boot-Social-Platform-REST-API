@@ -1,12 +1,10 @@
-package com.example.jeddit.models.models;
+package com.example.jeddit.models.models.commentaries;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
-@NoArgsConstructor
 public class CommentaryCreateRequest {
 
     private String jwttoken;

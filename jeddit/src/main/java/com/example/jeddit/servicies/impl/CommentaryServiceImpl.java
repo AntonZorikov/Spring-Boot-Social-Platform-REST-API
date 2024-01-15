@@ -7,8 +7,9 @@ import com.example.jeddit.exceptions.NotValidToken;
 import com.example.jeddit.models.entitys.Commentary;
 import com.example.jeddit.models.entitys.Post;
 import com.example.jeddit.models.entitys.User;
-import com.example.jeddit.models.models.CommentaryCreateRequest;
+import com.example.jeddit.models.models.commentaries.CommentaryCreateRequest;
 import com.example.jeddit.models.models.JWTTokenRequest;
+import com.example.jeddit.models.models.commentaries.CommentaryUpdateRequest;
 import com.example.jeddit.repositories.CommentaryRepository;
 import com.example.jeddit.repositories.PostRepository;
 import com.example.jeddit.repositories.UserRepository;
@@ -74,6 +75,25 @@ public class CommentaryServiceImpl implements CommentaryService {
         }
 
         return commentary.get();
+    }
+
+    @Override
+    public void update(long id, CommentaryUpdateRequest request) throws DataNotFoundException, NotValidToken, NotEnoughRightsException {
+        Optional<Commentary> commentary = commentaryRepository.findById(id);
+
+        if (commentary.isEmpty()) {
+            throw new DataNotFoundException("Commentary not found");
+        }
+        if (!jwtService.validateToken(request.getJwttoken())) {
+            throw new NotValidToken("Not valid token");
+        }
+        if (jwtService.extractUserId(request.getJwttoken()) != commentary.get().getOwner().getId()) {
+            throw new NotEnoughRightsException("Not enough rights exception");
+        }
+
+        commentary.get().setText(commentary.get().getText() + "\n" + request.getText());
+
+        commentaryRepository.save(commentary.get());
     }
 
     @Override

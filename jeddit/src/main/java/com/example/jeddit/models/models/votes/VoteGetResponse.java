@@ -1,4 +1,4 @@
-package com.example.jeddit.models.models.vote;
+package com.example.jeddit.models.models.votes;
 
 import com.example.jeddit.models.entitys.Vote;
 import lombok.Getter;

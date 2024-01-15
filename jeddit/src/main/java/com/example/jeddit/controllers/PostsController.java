@@ -7,7 +7,7 @@ import com.example.jeddit.models.models.ApiResponse;
 import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.models.models.posts.PostCreateRequest;
 import com.example.jeddit.models.models.posts.PostUpdateRequest;
-import com.example.jeddit.models.models.vote.VoteGetResponse;
+import com.example.jeddit.models.models.votes.VoteGetResponse;
 import com.example.jeddit.servicies.impl.CommentaryServiceImpl;
 import com.example.jeddit.servicies.impl.PostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
