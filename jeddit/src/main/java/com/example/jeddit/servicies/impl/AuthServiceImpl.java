@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    private static boolean isValidEmail(String email) {
+    public static boolean isValidEmail(String email) {
         Matcher matcher = emailPattern.matcher(email);
         return matcher.matches();
     }
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
         if (request.getLogin().length() > 50) {
-            throw new NotCorrectDataException("Login length must be less then 200 characters");
+            throw new NotCorrectDataException("Login length must be less then 50 characters");
         }
         if (request.getLogin().length() < 3) {
             throw new NotCorrectDataException("Login length must be more then 2 characters");
@@ -82,6 +82,5 @@ public class AuthServiceImpl implements AuthService {
 
         return user.get();
     }
-
 }
 
