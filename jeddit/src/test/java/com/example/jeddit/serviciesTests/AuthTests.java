@@ -65,6 +65,7 @@ public class AuthTests {
     public void registrationUser_loginMoreThen_throwsException() throws NotUniqueDataException, NotCorrectDataException {
         StringBuilder sb = new StringBuilder();
         sb.append("t".repeat(51));
+
         UserRegistrationRequest request = new UserRegistrationRequest(sb.toString(), "testPass", "test@mail.ru");
         assertThrows(NotCorrectDataException.class, () -> authService.registrationUser(request));
     }
@@ -79,6 +80,7 @@ public class AuthTests {
     public void registrationUser_passwordMoreThen_throwsException() throws NotUniqueDataException, NotCorrectDataException {
         StringBuilder sb = new StringBuilder();
         sb.append("t".repeat(256));
+
         UserRegistrationRequest request = new UserRegistrationRequest("testLogin", sb.toString(), "test@mail.ru");
         assertThrows(NotCorrectDataException.class, () -> authService.registrationUser(request));
     }
@@ -87,6 +89,7 @@ public class AuthTests {
     public void registrationUser_emailMoreThen_throwsException() throws NotUniqueDataException, NotCorrectDataException {
         StringBuilder sb = new StringBuilder();
         sb.append("t".repeat(320));
+
         UserRegistrationRequest request = new UserRegistrationRequest("testLogin", "tesPassword", sb.toString() + "@mail.ru");
         assertThrows(NotCorrectDataException.class, () -> authService.registrationUser(request));
     }
@@ -113,6 +116,7 @@ public class AuthTests {
         String login = "testLogin";
         String password = "testPassword";
         UserSignInRequest request = new UserSignInRequest(login, password);
+
         when(userRepository.findByLogin(login)).thenReturn(Optional.empty());
         assertThrows(DataNotFoundException.class, () -> authService.signIn(request));
     }
@@ -128,6 +132,7 @@ public class AuthTests {
         User user = new User();
         user.setLogin(login);
         user.setPassword(encodedPassword);
+
         when(userRepository.findByLogin(login)).thenReturn(Optional.of(user));
         assertThrows(WrongPasswordException.class, () -> authService.signIn(request));
     }
