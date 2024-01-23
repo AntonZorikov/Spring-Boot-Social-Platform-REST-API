@@ -31,16 +31,15 @@ public class AuthController {
     @ResponseBody
     private ResponseEntity<Object> userRegistration(@RequestBody UserRegistrationRequest request) {
         try {
-            logger.debug("User {} registration request received ", request.getLogin());
             User user = authService.registrationUser(request);
             String token = JWTService.generateToken(user);
             logger.info("User {} successfully registered", request.getLogin());
             return ResponseEntity.status(HttpStatus.CREATED).body(new UserAuthResponse(token));
         } catch (NotCorrectDataException e) {
-            logger.warn("User {} registration failed due to incorrect data", request.getLogin());
+            logger.warn("User {} registration failed: NotCorrectDataException", request.getLogin());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(false, e.getMessage()));
         } catch (NotUniqueDataException e) {
-            logger.warn("User {} registration failed due to duplicate data", request.getLogin());
+            logger.warn("User {} registration failed: NotUniqueDataException", request.getLogin());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(false, e.getMessage()));
         } catch (Exception e) {
             logger.error("Unexpected error during user registration: {}", e.getMessage());
@@ -52,16 +51,15 @@ public class AuthController {
     @ResponseBody
     private ResponseEntity<Object> signin(@RequestBody UserSignInRequest request) {
         try {
-            logger.debug("User {} sign in request received ", request.getLogin());
             User user = authService.signIn(request);
             String token = JWTService.generateToken(user);
             logger.info("User {} successfully sign in", request.getLogin());
             return ResponseEntity.status(HttpStatus.OK).body(new UserAuthResponse(token));
         } catch (DataNotFoundException e){
-            logger.warn("User {} registration failed due to data not found", request.getLogin());
+            logger.warn("User {} registration failed: DataNotFoundException", request.getLogin());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "error"));
         } catch(WrongPasswordException e) {
-            logger.warn("User {} registration failed due to wrong password", request.getLogin());
+            logger.warn("User {} registration failed: WrongPasswordException", request.getLogin());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(false, "error"));
         }
     }

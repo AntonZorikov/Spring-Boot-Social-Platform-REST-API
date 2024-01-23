@@ -9,6 +9,8 @@ import com.example.jeddit.models.models.JWTTokenRequest;
 import com.example.jeddit.repositories.PostRepository;
 import com.example.jeddit.repositories.UserRepository;
 import com.example.jeddit.servicies.ContentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,15 +32,19 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private JWTService jwtService;
 
+    private static final Logger logger = LoggerFactory.getLogger(ContentServiceImpl.class);
+
     @Override
     public Page<Post> getUserNewsline(JWTTokenRequest request, int page, int size) throws NotValidToken, DataNotFoundException {
         if (!jwtService.validateToken(request.getJwttoken())) {
+            logger.warn("Failed to get user newsline: Not valid token");
             throw new NotValidToken("Not valid token");
         }
 
         Optional<User> user = userRepository.findById(jwtService.extractUserId(request.getJwttoken()));
 
         if (user.isEmpty()) {
+            logger.warn("Failed to get user newsline: User not found");
             throw new DataNotFoundException("User not found");
         }
 
@@ -46,4 +52,5 @@ public class ContentServiceImpl implements ContentService {
 
         return postRepository.findPostsByCommunityId(communityId, PageRequest.of(page, size));
     }
+
 }
