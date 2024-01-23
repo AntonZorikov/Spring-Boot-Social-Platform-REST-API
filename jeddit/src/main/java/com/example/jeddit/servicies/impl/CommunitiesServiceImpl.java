@@ -36,7 +36,7 @@ public class CommunitiesServiceImpl implements CommunitiesService {
     @Autowired
     private JWTService jwtService;
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentaryServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommunitiesServiceImpl.class);
 
     @Override
     @Transactional

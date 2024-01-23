@@ -32,7 +32,7 @@ public class UsersServiceImpl implements UserService {
     @Autowired
     private JWTService jwtService;
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentaryServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UsersServiceImpl.class);
 
     @Override
     public void changePassword(UserChangePasswordRequest request) throws NotValidToken, DataNotFoundException, WrongPasswordException, NotCorrectDataException, NotEnoughRightsException {

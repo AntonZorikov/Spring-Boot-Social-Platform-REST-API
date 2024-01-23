@@ -27,7 +27,7 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentaryServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SearchServiceImpl.class);
 
     @Override
     public Page<User> searchUser(SearchRequest request, int page, int size) {

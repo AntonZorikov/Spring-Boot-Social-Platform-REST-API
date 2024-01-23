@@ -41,7 +41,7 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private VoterRepository voterRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(CommentaryServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Override
     public void create(PostCreateRequest request) throws NotValidToken, DataNotFoundException, NotCorrectDataException, NotEnoughRightsException {
